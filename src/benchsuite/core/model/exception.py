@@ -40,9 +40,7 @@ class BashCommandExecutionFailedException(Exception):
 
     def __init__(self, *args: Any) -> None:
         super().__init__(*args)
+        self.cmd = None
+        self.exit_status = None
         self.stdout = None
         self.stderr = None
-
-    def set_output(self, stdout, stderr):
-        self.stdout = stdout
-        self.stderr = stderr
