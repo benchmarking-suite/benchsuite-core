@@ -28,7 +28,7 @@ from benchsuite.core.model.exception import ControllerConfigurationException
 
 class Benchmark:
     """
-    the class that represents a benchmark test
+    A Benchmark
     """
 
     @abstractmethod
