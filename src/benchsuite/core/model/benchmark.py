@@ -27,6 +27,9 @@ from benchsuite.core.model.exception import ControllerConfigurationException
 
 
 class Benchmark:
+    """
+    the class that represents a benchmark test
+    """
 
     @abstractmethod
     def __init__(self, name, workload):
