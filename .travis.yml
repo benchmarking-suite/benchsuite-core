@@ -1,7 +1,5 @@
 language: python
 python:
   - "3.6"
-install:
+script:
   - pip install .
-test:
-  - echo "no tests"
