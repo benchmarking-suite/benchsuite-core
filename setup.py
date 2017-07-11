@@ -13,4 +13,5 @@ setup(
     author='Gabriele Giammatteo',
     author_email='gabriele.giammatteo@eng.it',
     description='',
+    install_requires=['appdirs']
 )
