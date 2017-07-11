@@ -30,7 +30,6 @@ from benchsuite.core.model.provider import load_service_provider_from_config_fil
 from benchsuite.core.model.session import BenchmarkingSession
 from benchsuite.core.session import SessionStorageManager
 
-CONFIG_FOLDER_VARIABLE_NAME = 'BENCHSUITE_CONFIG_FOLDER'
 STORAGE_FOLDER_VARIABLE_NAME = 'BENCHSUITE_STORAGE_FOLDER'
 
 
@@ -45,16 +44,11 @@ class BenchmarkingController():
 
     def __init__(self, config_folder=None, storage_dir=None):
 
-        if config_folder:
-            self.config_folder = config_folder
-        else:
-            if not CONFIG_FOLDER_VARIABLE_NAME in os.environ:
-                raise ControllerConfigurationException(CONFIG_FOLDER_VARIABLE_NAME + ' variable not set')
-            else:
-                self.config_folder = os.environ[CONFIG_FOLDER_VARIABLE_NAME]
-
-        logger.info('Using config directory at ' + self.config_folder)
+        self.config_folder = config_folder
+        if self.config_folder:
+            logger.info('Using custom config directory at ' + self.config_folder)
         self.configuration = ControllerConfiguration(self.config_folder)
+
         self.storage_folder = storage_dir or self.configuration.get_default_data_dir()
         self.session_storage = SessionStorageManager(self.storage_folder)
         self.session_storage.load()

@@ -17,7 +17,8 @@
 #
 # Developed in the ARTIST EU project (www.artist-project.eu) and in the
 # CloudPerfect EU project (https://cloudperfect.eu/)
-
-
+from appdirs import user_data_dir, site_config_dir, user_config_dir
 
 if __name__ == '__main__':
+
+    print(user_config_dir('BenchmarkingSuite', None))
