@@ -20,10 +20,9 @@
 
 import logging
 import os
-
-from appdirs import user_data_dir
 from typing import Dict
 
+from benchsuite.core.config import ControllerConfiguration
 from benchsuite.core.model.benchmark import load_benchmark_from_config_file
 from benchsuite.core.model.exception import ControllerConfigurationException, UndefinedExecutionException
 from benchsuite.core.model.execution import BenchmarkExecution
@@ -37,26 +36,6 @@ STORAGE_FOLDER_VARIABLE_NAME = 'BENCHSUITE_STORAGE_FOLDER'
 
 logger = logging.getLogger(__name__)
 
-
-class ControllerConfiguration():
-
-    CLOUD_PROVIDERS_DIR = 'providers'
-    BENCHMARKS_DIR = 'benchmarks'
-
-    def __init__(self, config_folder):
-        self.root = config_folder
-
-    def get_default_data_dir(self):
-        d = user_data_dir('BenchmarkingSuite', None)
-        if not os.path.exists(d):
-            os.makedirs(d)
-        return d
-
-    def get_provider_config_file(self, name):
-        return self.root + os.path.sep + self.CLOUD_PROVIDERS_DIR + os.path.sep + name + '.conf'
-
-    def get_benchmark_config_file(self, name):
-        return self.root + os.path.sep + self.BENCHMARKS_DIR + os.path.sep + name + '.conf'
 
 
 class BenchmarkingController():

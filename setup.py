@@ -8,7 +8,7 @@ setup(
     packages=find_packages('src'),
     namespace_packages=['benchsuite'],
     package_dir={'': 'src'},
-    url='https://github.com/benchmarking-suite/benchsuite-common',
+    url='https://github.com/benchmarking-suite/benchsuite-core',
     license='',
     author='Gabriele Giammatteo',
     author_email='gabriele.giammatteo@eng.it',
