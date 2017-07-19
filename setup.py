@@ -4,7 +4,7 @@ from setuptools import find_packages
 
 setup(
     name='benchsuite.core',
-    version='2.0.0-dev20',
+    version='2.0.0-dev21',
     packages=find_packages('src'),
     namespace_packages=['benchsuite'],
     package_dir={'': 'src'},

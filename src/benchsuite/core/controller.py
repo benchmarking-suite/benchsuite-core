@@ -108,11 +108,11 @@ class BenchmarkingController():
     def prepare_execution(self, exec_id, session_id=None):
         e = self.get_execution(exec_id, session_id)
         logger.debug("Execution loaded: {0}".format(e))
-        e.prepare()
+        return e.prepare()
 
     def run_execution(self, exec_id, async=False, session_id=None):
         e = self.get_execution(exec_id, session_id)
-        e.execute(async=async)
+        return e.execute(async=async)
 
 
     def collect_execution_results(self, exec_id, session_id=None):
