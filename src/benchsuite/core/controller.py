@@ -26,7 +26,7 @@ from benchsuite.core.config import ControllerConfiguration
 from benchsuite.core.model.benchmark import load_benchmark_from_config_file
 from benchsuite.core.model.exception import ControllerConfigurationException, UndefinedExecutionException
 from benchsuite.core.model.execution import BenchmarkExecution
-from benchsuite.core.model.provider import load_service_provider_from_config_file
+from benchsuite.core.model.provider import load_service_provider_from_config_file, load_provider_from_config_string
 from benchsuite.core.model.session import BenchmarkingSession
 from benchsuite.core.session import SessionStorageManager
 
@@ -79,6 +79,13 @@ class BenchmarkingController():
         s = BenchmarkingSession(p)
         self.session_storage.add(s)
         return s
+
+    def new_session_by_config_string(self, configuration_string: str) -> BenchmarkingSession:
+        p = load_provider_from_config_string(configuration_string)
+        s = BenchmarkingSession(p)
+        self.session_storage.add(s)
+        return s
+
 
     def destroy_session(self, session_id: str) -> None:
         s = self.get_session(session_id)

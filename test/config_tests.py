@@ -19,6 +19,24 @@
 # CloudPerfect EU project (https://cloudperfect.eu/)
 from appdirs import user_data_dir, site_config_dir, user_config_dir
 
+from benchsuite.core.controller import BenchmarkingController
+
 if __name__ == '__main__':
 
-    print(user_config_dir('BenchmarkingSuite', None))
+    c = BenchmarkingController(config_folder='/home/ggiammat/projects/ENG.CloudPerfect/workspace/testing/bsconfig')
+
+    string = """
+[provider]
+class = benchsuite.stdlib.provider.existing_vm.ExistingVMProvider
+
+[my_vm1]
+ip_address = 217.172.12.215
+key_path = /home/ggiammat/credentials/filab-vicenza/ggiammat-key.pem
+user = ubuntu
+platform = ubuntu
+"""
+
+    s = c.new_session_by_config_string(string)
+
+
+    print(s)

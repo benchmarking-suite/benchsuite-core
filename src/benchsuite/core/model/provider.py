@@ -50,14 +50,23 @@ class ServiceProvider(ABC):
         pass
 
 
-def load_service_provider_from_config_file(config_file, service_type) -> ServiceProvider:
+def load_service_provider_from_config_file(config_file, service_type=None) -> ServiceProvider:
     if not os.path.isfile(config_file):
         raise ControllerConfigurationException('Config file {0} does not exist'.format(config_file))
 
     config = configparser.ConfigParser()
     config.read(config_file)
+    return load_provider_from_config(config, service_type)
 
 
+def load_provider_from_config_string(config_string, service_type=None):
+    config = configparser.ConfigParser()
+    config.read_string(config_string)
+
+    return load_provider_from_config(config, service_type)
+
+
+def load_provider_from_config(config, service_type):
     provider_class = config['provider']['class']
 
     module_name, class_name = provider_class.rsplit('.', 1)
@@ -65,5 +74,15 @@ def load_service_provider_from_config_file(config_file, service_type) -> Service
     __import__(module_name)
     module = sys.modules[module_name]
     clazz = getattr(module, class_name)
+
+
+    if not service_type:
+        # if there is only one section (other then "provider") in the configuration, use that as service provider,
+        # otherwise rise an excepction
+        sections = [s for s in list(config.keys()) if s != 'DEFAULT' and s != 'provider']
+        if len(sections) > 1:
+            raise ControllerConfigurationException('Service Type not specified and multiple sections found in the configuration')
+        else:
+            service_type = sections[0]
 
     return clazz.load_from_config_file(config, service_type)
