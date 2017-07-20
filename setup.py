@@ -21,6 +21,9 @@ from distutils.core import setup
 import os
 from setuptools import find_packages
 
+# import the VERSION from the source code
+import sys
+sys.path.append('src/')
 from benchsuite.core import VERSION
 
 setup(
