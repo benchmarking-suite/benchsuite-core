@@ -23,8 +23,9 @@ from setuptools import find_packages
 
 # import the VERSION from the source code
 import sys
-sys.path.append('src/')
-from benchsuite.core import VERSION
+sys.path.append(os.getcwd() + '/src/benchsuite')
+from core import VERSION
+
 
 setup(
     name='benchsuite.core',
