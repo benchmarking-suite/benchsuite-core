@@ -19,11 +19,13 @@
 import glob
 import os
 
+from benchsuite.core.config import ServiceProviderConfiguration, BenchmarkConfiguration
 from benchsuite.core.controller import BenchmarkingController
 
 if __name__ == '__main__':
 
 
-    for i in os.listdir(os.path.join("/home/ggiammat/projects/ENG.CloudPerfect/workspace/testing/bsconfig", "providers")):
+    for i in glob.glob(os.path.join("/home/ggiammat/projects/ENG.CloudPerfect/workspace/testing/bsconfig", "benchmarks", "*.conf")):
         if i.endswith('.conf'):
-            print(i[:-5])
+            p = BenchmarkConfiguration(i)
+            print(p)

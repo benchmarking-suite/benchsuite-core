@@ -86,9 +86,11 @@ class BenchmarkingController():
         self.session_storage.add(s)
         return s
 
-    #TODO very initial implementation. Does not include the service types for each provider
     def list_available_providers(self):
         return self.configuration.get_providers()
+
+    def list_available_benchmarks(self):
+        return self.configuration.get_benchmarks()
 
     def destroy_session(self, session_id: str) -> None:
         s = self.get_session(session_id)
