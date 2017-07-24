@@ -30,7 +30,7 @@ class BenchmarkingSession:
 
     def __init__(self, provider: ServiceProvider):
         self.provider = provider
-        self.id = str(uuid.uuid1())
+        self.id = str(uuid.uuid4())
         self.created = time.time()
         self.executions = {}
 

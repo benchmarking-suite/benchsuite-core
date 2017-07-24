@@ -33,7 +33,7 @@ class ServiceProvider(ABC):
 
     @abstractmethod
     def __init__(self, type):
-        self.id = str(uuid.uuid1())
+        self.id = str(uuid.uuid4())
         self.type = type
 
     @abstractmethod
