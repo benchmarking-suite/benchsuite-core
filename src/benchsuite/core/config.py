@@ -53,6 +53,22 @@ class ControllerConfiguration():
             os.makedirs(d)
         return d
 
+
+    def get_providers(self):
+
+        names = []
+
+        if self.alternative_config_dir:
+            for n in os.listdir(os.path.join(self.alternative_config_dir, self.CLOUD_PROVIDERS_DIR)):
+                if n.endswith('.conf'):
+                    names.append(n[:-5])
+
+        for n in os.listdir(os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR)):
+            if n.endswith('.conf'):
+                names.append(n[:-5])
+
+        return names;
+
     def get_provider_config_file(self, name):
 
         if os.path.isfile(name):

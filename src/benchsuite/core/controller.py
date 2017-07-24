@@ -28,7 +28,7 @@ from benchsuite.core.model.exception import ControllerConfigurationException, Un
 from benchsuite.core.model.execution import BenchmarkExecution
 from benchsuite.core.model.provider import load_service_provider_from_config_file, load_provider_from_config_string
 from benchsuite.core.model.session import BenchmarkingSession
-from benchsuite.core.session import SessionStorageManager
+from benchsuite.core.sessionmanager import SessionStorageManager
 
 STORAGE_FOLDER_VARIABLE_NAME = 'BENCHSUITE_STORAGE_FOLDER'
 
@@ -86,6 +86,9 @@ class BenchmarkingController():
         self.session_storage.add(s)
         return s
 
+    #TODO very initial implementation. Does not include the service types for each provider
+    def list_available_providers(self):
+        return self.configuration.get_providers()
 
     def destroy_session(self, session_id: str) -> None:
         s = self.get_session(session_id)

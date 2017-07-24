@@ -39,14 +39,15 @@ class SessionStorageManager:
     def load(self):
         try:
             self.sessions = pickle.load( open( self.storage_file, "rb"))
-            logger.info('Benchmarking Sessions loaded from ' + self.storage_file)
+            logger.info('Benchmarking Sessions loaded from %s (%d sessions)', self.storage_file, len(self.sessions))
 
         except FileNotFoundError:
-            pass
+            logger.debug('Benchmarking Sessions storage file does not exit (%s) (Not loading sessions)', self.storage_file)
+
 
     def store(self):
         pickle.dump(self.sessions, open(self.storage_file, "wb"))
-        logger.info('Benchmarking Sessions stored to ' + self.storage_file)
+        logger.info('Benchmarking Sessions stored to %s (%d sessions)', self.storage_file, len(self.sessions))
 
     def list(self):
         return self.sessions.values()

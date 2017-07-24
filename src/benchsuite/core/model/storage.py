@@ -16,14 +16,26 @@
 #
 # Developed in the ARTIST EU project (www.artist-project.eu) and in the
 # CloudPerfect EU project (https://cloudperfect.eu/)
-import glob
-import os
-
-from benchsuite.core.controller import BenchmarkingController
-
-if __name__ == '__main__':
 
 
-    for i in os.listdir(os.path.join("/home/ggiammat/projects/ENG.CloudPerfect/workspace/testing/bsconfig", "providers")):
-        if i.endswith('.conf'):
-            print(i[:-5])
+
+from abc import ABC, abstractmethod
+
+
+class StorageConnector(ABC):
+
+    @abstractmethod
+    def save_execution_result(self, execution_result):
+        """
+        saves an execution result on the storage backend
+        :param execution_result: the execution result to save
+        """
+        pass
+
+
+class SimpleFileBackend(StorageConnector):
+    pass
+
+
+def load_storage():
+    pass

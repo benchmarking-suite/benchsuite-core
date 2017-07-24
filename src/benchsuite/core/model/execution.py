@@ -17,8 +17,6 @@
 # Developed in the ARTIST EU project (www.artist-project.eu) and in the
 # CloudPerfect EU project (https://cloudperfect.eu/)
 
-
-
 import time
 import uuid
 from abc import ABC
@@ -28,6 +26,17 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class ExecutionResult:
+
+    def __init__(self):
+        self.execution = None
+        self.start = None
+        self.duration = -1
+
+
+
+
+
 class ExecutionCommandInfo:
     """
     Basic information about the execution of a command
@@ -35,6 +44,12 @@ class ExecutionCommandInfo:
     def __init__(self):
         self.started = None
         self.duration = None
+        self.exec_id = None
+        self.tool = None
+        self.workload = None
+        self.provider = None
+        self.service_type = None
+
 
 class BenchmarkExecution:
 
@@ -61,6 +76,9 @@ class BenchmarkExecution:
         self.test.execute(self, async=async)
         ret.duration = time.time() - ret.started
         return ret
+
+    def get_execution_result(self) -> ExecutionResult:
+        pass
 
     def collect_result(self):
         return self.test.get_result(self)
