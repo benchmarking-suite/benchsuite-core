@@ -19,7 +19,6 @@
 
 
 import logging
-import os
 from typing import Dict
 
 from benchsuite.core.config import ControllerConfiguration
@@ -28,6 +27,7 @@ from benchsuite.core.model.exception import ControllerConfigurationException, Un
 from benchsuite.core.model.execution import BenchmarkExecution
 from benchsuite.core.model.provider import load_service_provider_from_config_file, load_provider_from_config_string
 from benchsuite.core.model.session import BenchmarkingSession
+from benchsuite.core.model.storage import load_storage_connector_from_confif_file
 from benchsuite.core.sessionmanager import SessionStorageManager
 
 STORAGE_FOLDER_VARIABLE_NAME = 'BENCHSUITE_STORAGE_FOLDER'
@@ -52,6 +52,13 @@ class BenchmarkingController():
         self.storage_folder = storage_dir or self.configuration.get_default_data_dir()
         self.session_storage = SessionStorageManager(self.storage_folder)
         self.session_storage.load()
+
+        try:
+            self.storage_connector = load_storage_connector_from_confif_file(self.configuration.get_storage_config_file())
+        except ControllerConfigurationException:
+            logger.warning('Storage configuration file not found. Storage of results is disabled')
+            self.storage_connector = None
+
 
     def __enter__(self):
         return self
@@ -129,6 +136,14 @@ class BenchmarkingController():
         e = self.get_execution(exec_id, session_id)
         return e.collect_result()
 
+    def store_execution_result(self, exec_id, session_id=None):
+        e = self.get_execution(exec_id, session_id)
+        if self.storage_connector:
+            r = e.get_execution_result()
+            self.storage_connector.save_execution_result(r)
+
+        else:
+            logger.warning('StorageConnector not configured. Storage of results is disabled.')
 
     def execute_onestep(self, provider, service_type: str, tool: str, workload: str) -> str:
         session = self.new_session(provider, service_type)

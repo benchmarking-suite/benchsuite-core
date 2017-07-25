@@ -29,11 +29,12 @@ logger = logging.getLogger(__name__)
 class ExecutionResult:
 
     def __init__(self):
-        self.execution = None
         self.start = None
         self.duration = -1
-
-
+        self.tool = None
+        self.workload = None
+        self.provider = None
+        self.service_type = None
 
 
 
@@ -44,11 +45,6 @@ class ExecutionCommandInfo:
     def __init__(self):
         self.started = None
         self.duration = None
-        self.exec_id = None
-        self.tool = None
-        self.workload = None
-        self.provider = None
-        self.service_type = None
 
 
 class BenchmarkExecution:
@@ -59,6 +55,7 @@ class BenchmarkExecution:
         self.id = str(uuid.uuid1())
         self.created = time.time()
         self.exec_env = None
+        self.last_run_info = None
 
     def prepare(self) -> ExecutionCommandInfo:
         env_request = self.test.get_env_request()
@@ -75,10 +72,21 @@ class BenchmarkExecution:
         ret.started = time.time()
         self.test.execute(self, async=async)
         ret.duration = time.time() - ret.started
+        self.last_run_info = ret
         return ret
 
     def get_execution_result(self) -> ExecutionResult:
-        pass
+        if not self.last_run_info:
+            return None
+
+        e = ExecutionResult()
+        e.start = self.last_run_info.started
+        e.duration = self.last_run_info.duration
+        e.tool = self.test.name
+        e.workload = self.test.workload
+        e.provider = self.session.provider.type
+
+        return e
 
     def collect_result(self):
         return self.test.get_result(self)

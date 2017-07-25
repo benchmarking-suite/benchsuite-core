@@ -35,6 +35,7 @@ class ControllerConfiguration():
 
     CLOUD_PROVIDERS_DIR = 'providers'
     BENCHMARKS_DIR = 'benchmarks'
+    STORAGE_CONFIG_FILE = 'storage.conf'
 
     def __init__(self, alternative_config_dir=None):
         self.default_config_dir = os.path.join(user_config_dir(), 'benchmarking-suite')
@@ -68,6 +69,24 @@ class ControllerConfiguration():
                 names.append(n[:-5])
 
         return names;
+
+    # TODO: add an alternative location (based on environment variable)
+    def get_storage_config_file(self):
+        """
+        Returns the configuration file for the storage.
+        :return: 
+        """
+        if self.alternative_config_dir:
+            file = os.path.join(self.alternative_config_dir, self.STORAGE_CONFIG_FILE)
+
+            if os.path.isfile(file):
+                return file
+
+        file = os.path.join(self.default_config_dir, self.STORAGE_CONFIG_FILE)
+        if os.path.isfile(file):
+            return file
+
+        raise ControllerConfigurationException('Storage configuration file not found')
 
     def get_provider_config_file(self, name):
 

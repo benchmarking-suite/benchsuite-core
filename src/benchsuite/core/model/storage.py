@@ -16,10 +16,17 @@
 #
 # Developed in the ARTIST EU project (www.artist-project.eu) and in the
 # CloudPerfect EU project (https://cloudperfect.eu/)
-
-
-
+import configparser
+import os
 from abc import ABC, abstractmethod
+
+import sys
+
+import logging
+
+from benchsuite.core.model.exception import ControllerConfigurationException
+
+logger = logging.getLogger(__name__)
 
 
 class StorageConnector(ABC):
@@ -32,10 +39,29 @@ class StorageConnector(ABC):
         """
         pass
 
+    @staticmethod
+    @abstractmethod
+    def load_from_config(config):
+        pass
 
 class SimpleFileBackend(StorageConnector):
-    pass
+
+    def load_from_config(config):
+        logger.debug('Loading %s', SimpleFileBackend.__module__ + "." + __class__.__name__)
 
 
-def load_storage():
-    pass
+def load_storage_connector_from_confif_file(config_file):
+    if not os.path.isfile(config_file):
+        raise ControllerConfigurationException('Config file {0} does not exist'.format(config_file))
+
+    config = configparser.ConfigParser()
+    config.read(config_file)
+    storage_class = config['DEFAULT']['class']
+
+    module_name, class_name = storage_class.rsplit('.', 1)
+
+    __import__(module_name)
+    module = sys.modules[module_name]
+    clazz = getattr(module, class_name)
+
+    return clazz.load_from_config(config)
