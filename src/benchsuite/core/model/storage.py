@@ -56,7 +56,7 @@ def load_storage_connector_from_confif_file(config_file):
 
     config = configparser.ConfigParser()
     config.read(config_file)
-    storage_class = config['DEFAULT']['class']
+    storage_class = config['Storage']['class']
 
     module_name, class_name = storage_class.rsplit('.', 1)
 

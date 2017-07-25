@@ -131,8 +131,9 @@ class BenchmarkingController():
 
     def run_execution(self, exec_id, async=False, session_id=None):
         e = self.get_execution(exec_id, session_id)
-        return e.execute(async=async)
-
+        r = e.execute(async=async)
+        self.store_execution_result(exec_id)
+        return r
 
     def collect_execution_results(self, exec_id, session_id=None):
         e = self.get_execution(exec_id, session_id)
@@ -143,15 +144,14 @@ class BenchmarkingController():
         if self.storage_connector:
             r = e.get_execution_result()
             self.storage_connector.save_execution_result(r)
-
         else:
             logger.warning('StorageConnector not configured. Storage of results is disabled.')
 
     def execute_onestep(self, provider, service_type: str, tool: str, workload: str) -> str:
         session = self.new_session(provider, service_type)
         execution = self.new_execution(session.id, tool, workload)
-        execution.prepare()
-        execution.execute()
-        out, err = execution.collect_result()
+        self.prepare_execution(execution.id)
+        self.run_execution(execution.id)
+        out, err = self.collect_execution_results(execution.id)
         session.destroy()
         return out, err

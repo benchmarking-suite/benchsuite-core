@@ -17,8 +17,6 @@
 # Developed in the ARTIST EU project (www.artist-project.eu) and in the
 # CloudPerfect EU project (https://cloudperfect.eu/)
 
-
-
 import configparser
 import os
 import sys
