@@ -120,6 +120,7 @@ class BenchmarkingController():
     def new_execution(self, session_id: str, tool: str, workload: str) -> BenchmarkExecution:
         s = self.session_storage.get(session_id)
         config_file = self.configuration.get_benchmark_config_file(tool)
+        logger.debug('Loading benchmark from configuration file %s', config_file)
         b = load_benchmark_from_config_file(config_file, workload)
         e = s.new_execution(b)
         return e

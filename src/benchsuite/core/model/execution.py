@@ -84,7 +84,8 @@ class BenchmarkExecution:
         e.duration = self.last_run_info.duration
         e.tool = self.test.name
         e.workload = self.test.workload
-        e.provider = self.session.provider.type
+        e.provider = self.session.provider.name
+        e.service_type = self.session.provider.service_type
 
         return e
 

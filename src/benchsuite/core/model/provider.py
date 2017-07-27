@@ -30,9 +30,10 @@ from benchsuite.core.model.execution import ExecutionEnvironmentRequest, Executi
 class ServiceProvider(ABC):
 
     @abstractmethod
-    def __init__(self, type):
+    def __init__(self, name, service_type):
         self.id = str(uuid.uuid4())
-        self.type = type
+        self.name = name
+        self.service_type = service_type
 
     @abstractmethod
     def get_execution_environment(self, request: ExecutionEnvironmentRequest) -> ExecutionEnvironment:
