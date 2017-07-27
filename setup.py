@@ -17,9 +17,8 @@
 # Developed in the ARTIST EU project (www.artist-project.eu) and in the
 # CloudPerfect EU project (https://cloudperfect.eu/)
 
-from distutils.core import setup
 import os
-from setuptools import find_packages
+from setuptools import setup, find_packages
 
 # import the VERSION from the source code
 import sys
