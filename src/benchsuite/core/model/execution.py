@@ -60,7 +60,7 @@ class BenchmarkExecution:
     def prepare(self) -> ExecutionCommandInfo:
         env_request = self.test.get_env_request()
         self.exec_env = self.session.get_execution_environment(env_request)
-        logger.debug('Execution environment obtained %s', str(self.exec_env))
+        logger.info('Using execution environment %s', str(self.exec_env))
         ret = ExecutionCommandInfo()
         ret.started = time.time()
         self.test.prepare(self)
