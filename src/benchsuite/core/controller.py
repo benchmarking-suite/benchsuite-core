@@ -151,8 +151,15 @@ class BenchmarkingController():
     def execute_onestep(self, provider, service_type: str, tool: str, workload: str) -> str:
         session = self.new_session(provider, service_type)
         execution = self.new_execution(session.id, tool, workload)
-        self.prepare_execution(execution.id)
-        self.run_execution(execution.id)
-        out, err = self.collect_execution_results(execution.id)
-        session.destroy()
-        return out, err
+        try:
+            self.prepare_execution(execution.id)
+            self.run_execution(execution.id)
+            out, err = self.collect_execution_results(execution.id)
+            return out, err
+
+        except Exception as ex:
+            raise ex
+
+        finally:  # make sure to always destroy the VMs created
+            session.destroy()
+            self.session_storage.remove(session)
