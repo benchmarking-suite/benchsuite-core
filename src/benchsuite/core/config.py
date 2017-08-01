@@ -107,6 +107,17 @@ class ControllerConfiguration():
 
         return providers
 
+    def get_provider_by_name(self, name: str) -> ServiceProviderConfiguration:
+
+        if self.alternative_config_dir:
+            for n in glob.glob(os.path.join(self.alternative_config_dir, self.CLOUD_PROVIDERS_DIR, name + '.conf')):
+                return ServiceProviderConfiguration(n)
+
+        for n in glob.glob(os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR, name + '.conf')):
+            return ServiceProviderConfiguration(n)
+
+        raise ControllerConfigurationException('Provider with name {0} does not exist'.format(name))
+
 
     def get_benchmarks(self):
         """
@@ -123,6 +134,19 @@ class ControllerConfiguration():
             benchmarks.append(BenchmarkConfiguration(n))
 
         return benchmarks
+
+
+    def get_benchmark_by_name(self, name):
+
+        if self.alternative_config_dir:
+            for n in glob.glob(os.path.join(self.alternative_config_dir, self.BENCHMARKS_DIR, name + '.conf')):
+                return BenchmarkConfiguration(n)
+
+        for n in glob.glob(os.path.join(self.default_config_dir, self.BENCHMARKS_DIR, name + '.conf')):
+            return BenchmarkConfiguration(n)
+
+        raise ControllerConfigurationException('Benchmark with name {0} does not exist'.format(name))
+
 
     # TODO: add an alternative location (based on environment variable)
     def get_storage_config_file(self):

@@ -19,6 +19,8 @@
 import glob
 import os
 
+from paramiko import RSAKey
+
 from benchsuite.core.config import ServiceProviderConfiguration, BenchmarkConfiguration
 from benchsuite.core.controller import BenchmarkingController
 
@@ -29,3 +31,4 @@ if __name__ == '__main__':
         if i.endswith('.conf'):
             p = BenchmarkConfiguration(i)
             print(p)
+

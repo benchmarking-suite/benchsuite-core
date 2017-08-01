@@ -19,7 +19,7 @@
 
 
 import logging
-from typing import Dict
+from typing import Dict, Tuple, List
 
 from benchsuite.core.config import ControllerConfiguration
 from benchsuite.core.model.benchmark import load_benchmark_from_config_file
@@ -148,18 +148,34 @@ class BenchmarkingController():
         else:
             logger.warning('StorageConnector not configured. Storage of results is disabled.')
 
-    def execute_onestep(self, provider, service_type: str, tool: str, workload: str) -> str:
-        session = self.new_session(provider, service_type)
-        execution = self.new_execution(session.id, tool, workload)
-        try:
-            self.prepare_execution(execution.id)
-            self.run_execution(execution.id)
-            out, err = self.collect_execution_results(execution.id)
-            return out, err
+    def execute_onestep(self, provider, service_type: str, tests: List[Tuple[str, str]]) -> None:
 
-        except Exception as ex:
-            raise ex
+        if not service_type:
+            s_types = self.configuration.get_provider_by_name(provider).service_types
+        else:
+            s_types = [service_type]
 
-        finally:  # make sure to always destroy the VMs created
-            session.destroy()
-            self.session_storage.remove(session)
+        for st in s_types:
+            session = self.new_session(provider, st)
+            try:
+
+                for tool, workload in tests:
+
+                    if not workload:
+                        workloads = self.configuration.get_benchmark_by_name(tool).workloads
+                    else:
+                        workloads = [workload]
+
+                    for w in workloads:
+                        execution = self.new_execution(session.id, tool, w)
+                        self.prepare_execution(execution.id)
+                        self.run_execution(execution.id)
+
+                        #out, err = self.collect_execution_results(execution.id)
+
+            except Exception as ex:
+                raise ex
+
+            finally:  # make sure to always destroy the VMs created
+                session.destroy()
+                self.session_storage.remove(session)
