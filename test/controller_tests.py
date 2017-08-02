@@ -20,6 +20,8 @@ import os
 
 import logging
 
+import sys
+
 from benchsuite.core.controller import BenchmarkingController
 
 if __name__ == '__main__':
@@ -30,3 +32,5 @@ if __name__ == '__main__':
 
         x = bc.configuration.get_benchmark_by_name('idsle')
         print(x.workloads)
+
+    sys.exit(0)
