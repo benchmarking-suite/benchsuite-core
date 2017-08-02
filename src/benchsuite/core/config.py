@@ -109,6 +109,9 @@ class ControllerConfiguration():
 
     def get_provider_by_name(self, name: str) -> ServiceProviderConfiguration:
 
+        if os.path.isfile(name):
+            return ServiceProviderConfiguration(name)
+
         if self.alternative_config_dir:
             for n in glob.glob(os.path.join(self.alternative_config_dir, self.CLOUD_PROVIDERS_DIR, name + '.conf')):
                 return ServiceProviderConfiguration(n)
