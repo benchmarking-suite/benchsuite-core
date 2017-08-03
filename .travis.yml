@@ -1,8 +1,8 @@
 language: python
 python:
   - "3.6"
+
 script:
-  - pip install -e git+https://github.com/benchmarking-suite/benchsuite-core.git#egg=benchsuite.core
   - pip install -e .
 
 
