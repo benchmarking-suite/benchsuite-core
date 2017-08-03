@@ -9,5 +9,8 @@ script:
 
 after_success:
 
-  # trigger the build of docker images
-  - "curl --data '{\"docker_tag\": \"dev\"}' -X POST https://cloud.docker.com/api/build/v1/source/e262c94f-53d2-46b1-87f0-cfc601d7c093/trigger/979387fb-5206-4ff9-8570-dda47777498e/call/"
+  # trigger the build of the rest service docker image
+  - "curl --data '{\"docker_tag\": \"dev\"}' -X POST https://cloud.docker.com/api/build/v1/source/8291f875-87f6-45cd-9723-30c2a181944f/trigger/47d79f08-02fe-4d1b-aaf1-101681e2f8ee/call/"
+
+  # trigger the build of the multiexec docker image
+  - "curl --data '{\"docker_tag\": \"dev\"}' -X POST https://cloud.docker.com/api/build/v1/source/23c8b2ad-55ff-46d3-a478-2a7f77176762/trigger/d06c03f6-43bd-4a1b-bff1-3ab208675493/call/"
