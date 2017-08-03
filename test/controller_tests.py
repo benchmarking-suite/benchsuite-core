@@ -33,4 +33,3 @@ if __name__ == '__main__':
         x = bc.configuration.get_benchmark_by_name('idsle')
         print(x.workloads)
 
-    sys.exit(0)
