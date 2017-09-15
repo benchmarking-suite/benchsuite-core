@@ -29,6 +29,7 @@ if __name__ == '__main__':
     os.environ['BENCHSUITE_CONFIG_FOLDER'] = '/home/ggiammat/projects/ENG.CloudPerfect/workspace/testing/bsconfig'
     logging.basicConfig(level=logging.DEBUG)
     with BenchmarkingController() as bc:
-        x = bc.configuration.get_benchmark_by_name('idsle')
-        print(x.workloads)
+        e = bc.new_execution('9ca3b4ce-f652-4faf-8e48-267f3f4c1460', 'filebench', 'varmail_short')
+        #e = bc.get_execution('0839b5ee-88d5-11e7-9f96-742b62857160')
+        e.test.parser.get_metrics('asd', 'ciao')
 

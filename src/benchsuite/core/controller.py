@@ -30,34 +30,28 @@ from benchsuite.core.model.session import BenchmarkingSession
 from benchsuite.core.model.storage import load_storage_connector_from_confif_file
 from benchsuite.core.sessionmanager import SessionStorageManager
 
+
 STORAGE_FOLDER_VARIABLE_NAME = 'BENCHSUITE_STORAGE_FOLDER'
 
 
 logger = logging.getLogger(__name__)
 
 
-
 class BenchmarkingController():
-    """
-    The main class to control the benchmarking
-    """
 
-    def __init__(self, config_folder=None, storage_dir=None):
+    def __init__(self, config_folder=None):
 
-        self.config_folder = config_folder
-        if self.config_folder:
-            logger.info('Using custom config directory at ' + self.config_folder)
-        self.configuration = ControllerConfiguration(self.config_folder)
+        self.configuration = ControllerConfiguration(config_folder)
 
-        self.storage_folder = storage_dir or self.configuration.get_default_data_dir()
-        self.session_storage = SessionStorageManager(self.storage_folder)
+        self.sessions_storage_folder = self.configuration.get_default_data_dir()
+        self.session_storage = SessionStorageManager(self.sessions_storage_folder)
         self.session_storage.load()
 
         try:
-            self.storage_connector = load_storage_connector_from_confif_file(self.configuration.get_storage_config_file())
+            self.results_storage = load_storage_connector_from_confif_file(self.configuration.get_storage_config_file())
         except ControllerConfigurationException:
-            logger.warning('Storage configuration file not found. Storage of results is disabled')
-            self.storage_connector = None
+            logger.warning('Results storage configuration file not found. Results storage of results is disabled')
+            self.results_storage = None
 
 
     def __enter__(self):
@@ -67,15 +61,19 @@ class BenchmarkingController():
         self.session_storage.store()
         return exc_type is None
 
+    def list_available_providers(self):
+        return self.configuration.get_providers()
+
+    def list_available_benchmarks(self):
+        return self.configuration.get_benchmarks()
+
+    #
+    # SESSIONS
+    #
+
     def list_sessions(self) -> Dict[str, BenchmarkingSession]:
-        """
-        Lists the sessions
-        :return: Session list
-        """
         return self.session_storage.list()
 
-    def list_executions(self):
-        return [item for sublist in self.list_sessions() for item in sublist.list_executions()]
 
     def get_session(self, session_id: str) -> BenchmarkingSession:
         return self.session_storage.get(session_id)
@@ -93,19 +91,24 @@ class BenchmarkingController():
         self.session_storage.add(s)
         return s
 
-    def list_available_providers(self):
-        return self.configuration.get_providers()
-
-    def list_available_benchmarks(self):
-        return self.configuration.get_benchmarks()
-
     def destroy_session(self, session_id: str) -> None:
         s = self.get_session(session_id)
         logger.debug('Session loaded: {0}'.format(s))
         s.destroy()
         self.session_storage.remove(s)
 
-    def get_execution(self, exec_id, session_id=None):
+    #
+    # EXECUTIONS
+    #
+
+    def list_executions(self):
+        return [item for sublist in self.list_sessions() for item in sublist.list_executions()]
+
+
+
+
+
+    def get_execution(self, exec_id: str, session_id: str = None) -> BenchmarkExecution:
         if session_id:
             return self.session_storage.get(session_id).get_execution(exec_id)
 
@@ -142,12 +145,16 @@ class BenchmarkingController():
 
     def store_execution_result(self, exec_id, session_id=None):
         e = self.get_execution(exec_id, session_id)
-        if self.storage_connector:
+        if self.results_storage:
             r = e.get_execution_result()
-            self.storage_connector.save_execution_result(r)
+            self.results_storage.save_execution_result(r)
         else:
-            logger.warning('StorageConnector not configured. Storage of results is disabled.')
+            logger.warning('Result Storage not configured. Storage of results is disabled.')
 
+
+    #
+    # MULTIEXEC
+    #
     def execute_onestep(self, provider, service_type: str, tests: List[Tuple[str, str]]) -> None:
 
         if not service_type:

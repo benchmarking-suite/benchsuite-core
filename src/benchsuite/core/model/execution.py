@@ -19,11 +19,23 @@
 
 import time
 import uuid
-from abc import ABC
+from abc import ABC, abstractmethod
 
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+class ExecutionResultParser(ABC):
+
+    @abstractmethod
+    def get_metrics(self, stdout, stderr):
+        """
+        Parsers the execution output to extract metrics
+        :param stdout: 
+        :param stderr: 
+        """
+        pass
 
 
 class ExecutionResult:
@@ -35,6 +47,8 @@ class ExecutionResult:
         self.workload = None
         self.provider = None
         self.service_type = None
+        self.metrics = None
+        self.logs = None
 
 
 
@@ -86,6 +100,12 @@ class BenchmarkExecution:
         e.workload = self.test.workload
         e.provider = self.session.provider.name
         e.service_type = self.session.provider.service_type
+
+        stdout, stderr = self.test.get_result(self)
+        e.logs = {'stdout': stdout, 'stderr': stderr}
+
+        if self.test.parser:
+            e.metrics = self.test.parser.get_metrics(stdout, stderr)
 
         return e
 
