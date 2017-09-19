@@ -30,22 +30,37 @@ class Benchmark:
     A Benchmark
     """
 
-    def __init__(self, tool_name, workload_name, workload_description):
+    def __init__(self, tool_id, workload_id, tool_name, workload_name, workload_description):
+        self.tool_id = tool_id
+        self.workload_id = workload_id
         self.tool_name = tool_name
         self.workload_name = workload_name
         self.workload_description = workload_description
 
     @staticmethod
     @abstractmethod
-    def load_from_config_file(config, service_type):
+    def load_from_config_file(config, tool, workload):
         pass
 
     @abstractmethod
     def get_env_request(self):
         pass
 
+    @abstractmethod
+    def prepare(self, execution):
+        pass
 
-def load_benchmark_from_config_file(config_file, workload):
+    @abstractmethod
+    def execute(self, execution, async=False):
+        pass
+
+    @abstractmethod
+    def get_result(self, execution):
+        pass
+
+
+
+def load_benchmark_from_config_file(config_file, tool, workload):
     if not os.path.isfile(config_file):
         raise ControllerConfigurationException('Config file {0} does not exist'.format(config_file))
 
@@ -61,4 +76,4 @@ def load_benchmark_from_config_file(config_file, workload):
     module = sys.modules[module_name]
     clazz = getattr(module, class_name)
 
-    return clazz.load_from_config_file(config, workload)
+    return clazz.load_from_config_file(config, tool, workload)

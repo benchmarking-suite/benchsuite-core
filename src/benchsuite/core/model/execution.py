@@ -96,8 +96,8 @@ class BenchmarkExecution:
         e = ExecutionResult()
         e.start = self.last_run_info.started
         e.duration = self.last_run_info.duration
-        e.tool = self.test.name
-        e.workload = self.test.workload
+        e.tool = self.test.tool_id
+        e.workload = self.test.workload_id
         e.provider = self.session.provider.name
         e.service_type = self.session.provider.service_type
 
@@ -116,7 +116,7 @@ class BenchmarkExecution:
         return '''
 | Execution {0}
 |  - test: {1} - {2}
-|  - environment: {3}'''.format(self.id, self.test.name, self.test.workload, self.exec_env)
+|  - environment: {3}'''.format(self.id, self.test.tool_id, self.test.workload_id, self.exec_env)
 
 
 class ExecutionEnvironment(ABC):
