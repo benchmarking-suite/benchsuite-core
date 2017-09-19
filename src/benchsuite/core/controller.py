@@ -62,10 +62,13 @@ class BenchmarkingController():
         return exc_type is None
 
     def list_available_providers(self):
-        return self.configuration.get_providers()
+        return self.configuration.list_available_providers()
 
-    def list_available_benchmarks(self):
-        return self.configuration.get_benchmarks()
+    def list_available_benchmark_cfgs(self):
+        return self.configuration.list_available_tools()
+
+    def get_benchmark_cfg(self, name):
+        return self.configuration.get_benchmark_by_name(name)
 
     #
     # SESSIONS
@@ -103,9 +106,6 @@ class BenchmarkingController():
 
     def list_executions(self):
         return [item for sublist in self.list_sessions() for item in sublist.list_executions()]
-
-
-
 
 
     def get_execution(self, exec_id: str, session_id: str = None) -> BenchmarkExecution:

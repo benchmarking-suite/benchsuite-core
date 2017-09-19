@@ -30,10 +30,10 @@ class Benchmark:
     A Benchmark
     """
 
-    @abstractmethod
-    def __init__(self, name, workload):
-        self.name = name
-        self.workload = workload
+    def __init__(self, tool_name, workload_name, workload_description):
+        self.tool_name = tool_name
+        self.workload_name = workload_name
+        self.workload_description = workload_description
 
     @staticmethod
     @abstractmethod

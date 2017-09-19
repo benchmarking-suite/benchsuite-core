@@ -21,7 +21,7 @@ import os
 
 from paramiko import RSAKey
 
-from benchsuite.core.config import ServiceProviderConfiguration, BenchmarkConfiguration
+from benchsuite.core.config import ServiceProviderConfiguration, BenchmarkToolConfiguration
 from benchsuite.core.controller import BenchmarkingController
 
 if __name__ == '__main__':
@@ -29,6 +29,6 @@ if __name__ == '__main__':
 
     for i in glob.glob(os.path.join("/home/ggiammat/projects/ENG.CloudPerfect/workspace/testing/bsconfig", "benchmarks", "*.conf")):
         if i.endswith('.conf'):
-            p = BenchmarkConfiguration(i)
+            p = BenchmarkToolConfiguration(i)
             print(p)
 

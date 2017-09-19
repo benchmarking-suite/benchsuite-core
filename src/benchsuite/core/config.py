@@ -16,6 +16,7 @@
 #
 # Developed in the ARTIST EU project (www.artist-project.eu) and in the
 # CloudPerfect EU project (https://cloudperfect.eu/)
+
 import configparser
 import glob
 import os
@@ -49,26 +50,38 @@ class ServiceProviderConfiguration():
         return '{0}: {1}'.format(self.name, self.service_types)
 
 
-class BenchmarkConfiguration():
+class BenchmarkToolConfiguration():
     """
-    Represents the configuration of a benchmark tol
+    Represents the configuration of a benchmark tool
     """
 
     def __init__(self, config_file):
-        self.name = ntpath.basename(config_file)[:-5]
+        self.id = ntpath.basename(config_file)[:-5]
 
         config = configparser.ConfigParser()
         config.read(config_file)
 
+        self.tool_name = config['DEFAULT']['tool_name']
+
         sections = [s for s in list(config.keys()) if s != 'DEFAULT']
 
-        self.workloads = sections
+        self.workloads = []
+
+        for w in sections:
+            self.workloads.append({
+                'id': w,
+                'workload_name': config[w]['workload_name'] if 'workload_name' in config[w] else None,
+                'workload_description': config[w]['workload_description'] if 'workload_description' in config[w] else None
+            })
 
     def __str__(self) -> str:
         return '{0}: {1}'.format(self.name, self.workloads)
 
 
 class ControllerConfiguration():
+    '''
+    Model the Benchmarking Suite configuration.
+    '''
 
     CLOUD_PROVIDERS_DIR = 'providers'
     BENCHMARKS_DIR = 'benchmarks'
@@ -91,7 +104,7 @@ class ControllerConfiguration():
             os.makedirs(d)
         return d
 
-    def get_providers(self):
+    def list_available_providers(self):
         """
         Lists all the ServiceProvider configuration files found in the configuration folders
         :return: 
@@ -106,6 +119,23 @@ class ControllerConfiguration():
             providers.append(ServiceProviderConfiguration(n))
 
         return providers
+
+    def list_available_tools(self):
+        """
+        Lists all the Benchmarks configuration files found in the configuration folders
+        :return: 
+        """
+        benchmarks = []
+
+        if self.alternative_config_dir:
+            for n in glob.glob(os.path.join(self.alternative_config_dir, self.BENCHMARKS_DIR, '*.conf')):
+                benchmarks.append(BenchmarkToolConfiguration(n))
+
+        for n in glob.glob(os.path.join(self.default_config_dir, self.BENCHMARKS_DIR, '*.conf')):
+            benchmarks.append(BenchmarkToolConfiguration(n))
+
+        return benchmarks
+
 
     def get_provider_by_name(self, name: str) -> ServiceProviderConfiguration:
 
@@ -122,31 +152,14 @@ class ControllerConfiguration():
         raise ControllerConfigurationException('Provider with name {0} does not exist'.format(name))
 
 
-    def get_benchmarks(self):
-        """
-        Lists all the Benchmarks configuration files found in the configuration folders
-        :return: 
-        """
-        benchmarks = []
-
-        if self.alternative_config_dir:
-            for n in glob.glob(os.path.join(self.alternative_config_dir, self.BENCHMARKS_DIR, '*.conf')):
-                benchmarks.append(BenchmarkConfiguration(n))
-
-        for n in glob.glob(os.path.join(self.default_config_dir, self.BENCHMARKS_DIR, '*.conf')):
-            benchmarks.append(BenchmarkConfiguration(n))
-
-        return benchmarks
-
-
     def get_benchmark_by_name(self, name):
 
         if self.alternative_config_dir:
             for n in glob.glob(os.path.join(self.alternative_config_dir, self.BENCHMARKS_DIR, name + '.conf')):
-                return BenchmarkConfiguration(n)
+                return BenchmarkToolConfiguration(n)
 
         for n in glob.glob(os.path.join(self.default_config_dir, self.BENCHMARKS_DIR, name + '.conf')):
-            return BenchmarkConfiguration(n)
+            return BenchmarkToolConfiguration(n)
 
         raise ControllerConfigurationException('Benchmark with name {0} does not exist'.format(name))
 
