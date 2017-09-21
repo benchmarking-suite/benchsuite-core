@@ -27,7 +27,6 @@ from appdirs import user_data_dir, user_config_dir
 
 from benchsuite.core.model.exception import ControllerConfigurationException
 
-CONFIG_FOLDER_VARIABLE_NAME = 'BENCHSUITE_CONFIG_FOLDER'
 logger = logging.getLogger(__name__)
 
 
@@ -88,12 +87,10 @@ class ControllerConfiguration():
     STORAGE_CONFIG_FILE = 'storage.conf'
 
     def __init__(self, alternative_config_dir=None):
+
         self.default_config_dir = os.path.join(user_config_dir(), 'benchmarking-suite')
 
         self.alternative_config_dir = alternative_config_dir
-
-        if CONFIG_FOLDER_VARIABLE_NAME in os.environ and not self.alternative_config_dir:
-            self.alternative_config_dir = os.environ[CONFIG_FOLDER_VARIABLE_NAME]
 
         logger.debug('Using default configuration directory: %s', self.default_config_dir)
         logger.debug('Using alternative configuration directory: %s', self.alternative_config_dir)

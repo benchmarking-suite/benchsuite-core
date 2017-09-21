@@ -17,7 +17,7 @@
 # Developed in the ARTIST EU project (www.artist-project.eu) and in the
 # CloudPerfect EU project (https://cloudperfect.eu/)
 
-
+import os
 import logging
 from typing import Dict, Tuple, List
 
@@ -31,8 +31,9 @@ from benchsuite.core.model.storage import load_storage_connector_from_confif_fil
 from benchsuite.core.sessionmanager import SessionStorageManager
 
 
-STORAGE_FOLDER_VARIABLE_NAME = 'BENCHSUITE_STORAGE_FOLDER'
-
+CONFIG_FOLDER_ENV_VAR_NAME = 'BENCHSUITE_CONFIG_FOLDER'
+PROVIDER_STRING_ENV_VAR_NAME = 'BENCHSUITE_PROVIDER'
+SERVICE_TYPE_STRING_ENV_VAR_NAME = 'BENCHSUITE_SERVICE_TYPE'
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +41,9 @@ logger = logging.getLogger(__name__)
 class BenchmarkingController():
 
     def __init__(self, config_folder=None):
+
+        if not config_folder and CONFIG_FOLDER_ENV_VAR_NAME in os.environ :
+            config_folder = os.environ[CONFIG_FOLDER_ENV_VAR_NAME]
 
         self.configuration = ControllerConfiguration(config_folder)
 
@@ -82,8 +86,25 @@ class BenchmarkingController():
         return self.session_storage.get(session_id)
 
     def new_session(self, cloud_provider_name: str, cloud_service_name: str) -> BenchmarkingSession:
-        c = self.configuration.get_provider_config_file(cloud_provider_name)
-        p = load_service_provider_from_config_file(c, cloud_service_name)
+
+        # service type is not provided via argument. Try to load from env variable
+        # Even if not provided, it is fine if the provider has only one service type
+        if not cloud_service_name and SERVICE_TYPE_STRING_ENV_VAR_NAME in os.environ:
+            cloud_service_name = os.environ[SERVICE_TYPE_STRING_ENV_VAR_NAME]
+
+        if not cloud_provider_name:
+            # provider configuration is not provided via argument. Try to load from environment
+            if PROVIDER_STRING_ENV_VAR_NAME in os.environ:
+                provider_config = os.environ[PROVIDER_STRING_ENV_VAR_NAME]
+                p = load_provider_from_config_string(provider_config, cloud_service_name)
+            else:
+                raise ControllerConfigurationException('Provider must be specified either '
+                                                       'via argument (--provider) or via environment '
+                                                       'variable ({0})'.format(PROVIDER_STRING_ENV_VAR_NAME))
+        else:
+            c = self.configuration.get_provider_config_file(cloud_provider_name)
+            p = load_service_provider_from_config_file(c, cloud_service_name)
+
         s = BenchmarkingSession(p)
         self.session_storage.add(s)
         return s
