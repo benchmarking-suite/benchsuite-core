@@ -23,7 +23,8 @@ from typing import Dict, Tuple, List
 
 from benchsuite.core.config import ControllerConfiguration
 from benchsuite.core.model.benchmark import load_benchmark_from_config_file
-from benchsuite.core.model.exception import ControllerConfigurationException, UndefinedExecutionException
+from benchsuite.core.model.exception import ControllerConfigurationException, UndefinedExecutionException, \
+    BashCommandExecutionFailedException, dump_BashCommandExecution_exception
 from benchsuite.core.model.execution import BenchmarkExecution
 from benchsuite.core.model.provider import load_service_provider_from_config_file, load_provider_from_config_string
 from benchsuite.core.model.session import BenchmarkingSession
@@ -152,13 +153,31 @@ class BenchmarkingController():
     def prepare_execution(self, exec_id, session_id=None):
         e = self.get_execution(exec_id, session_id)
         logger.debug("Execution loaded: {0}".format(e))
-        return e.prepare()
+
+        try:
+            return e.prepare()
+
+        except BashCommandExecutionFailedException as ex:
+            error_file = 'last_cmd_error_{0}.dump'.format(exec_id)
+            logger.error('Exception executing commands, dumping to {0}'.format(error_file))
+            dump_BashCommandExecution_exception(ex, error_file)
+            logger.info('Continuing with the next test')
+            raise ex
 
     def run_execution(self, exec_id, async=False, session_id=None):
         e = self.get_execution(exec_id, session_id)
-        r = e.execute(async=async)
-        self.store_execution_result(exec_id)
-        return r
+
+        try:
+            r = e.execute(async=async)
+            self.store_execution_result(exec_id)
+            return r
+
+        except BashCommandExecutionFailedException as ex:
+            error_file = 'last_cmd_error_{0}.dump'.format(exec_id)
+            logger.error('Exception executing commands, dumping to {0}'.format(error_file))
+            dump_BashCommandExecution_exception(ex, error_file)
+            logger.info('Continuing with the next test')
+            raise ex
 
     def collect_execution_results(self, exec_id, session_id=None):
         e = self.get_execution(exec_id, session_id)
@@ -196,10 +215,12 @@ class BenchmarkingController():
 
                     for w in workloads:
                         execution = self.new_execution(session.id, tool, w)
-                        self.prepare_execution(execution.id)
-                        self.run_execution(execution.id)
+                        try:
+                            self.prepare_execution(execution.id)
+                            self.run_execution(execution.id)
 
-                        #out, err = self.collect_execution_results(execution.id)
+                        except Exception as ex:
+                            logger.error('Exception running {0}:{1}. Ignoring and continuing with the next test'.format(tool, w))
 
             except Exception as ex:
                 raise ex

@@ -17,8 +17,10 @@
 # Developed in the ARTIST EU project (www.artist-project.eu) and in the
 # CloudPerfect EU project (https://cloudperfect.eu/)
 
-
+import logging
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 
 class UndefinedExecutionException(Exception):
@@ -44,3 +46,16 @@ class BashCommandExecutionFailedException(Exception):
         self.exit_status = None
         self.stdout = None
         self.stderr = None
+
+
+def dump_BashCommandExecution_exception(e, dump_file):
+    with open(dump_file, "w") as text_file:
+        text_file.write("========== CMD ==========\n")
+        text_file.write(e.cmd)
+        text_file.write('\n\n>>> Exit status was {0}\n'.format(e.exit_status))
+        text_file.write("\n\n========== STDOUT ==========\n")
+        text_file.write(e.stdout)
+        text_file.write("\n\n========== STDERR ==========\n")
+        text_file.write(e.stderr)
+        logger.info('Command stdout and stderr have been dumped to {0}'.format(dump_file))
+
