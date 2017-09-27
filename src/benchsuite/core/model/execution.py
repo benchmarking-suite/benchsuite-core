@@ -100,7 +100,7 @@ class BenchmarkExecution:
         e.workload = self.test.workload_id
         e.provider = self.session.provider.name
         e.service_type = self.session.provider.service_type
-
+        e.exec_env = self.exec_env.get_specs_dict()
         stdout, stderr = self.test.get_result(self)
         e.logs = {'stdout': stdout, 'stderr': stderr}
 
@@ -124,6 +124,13 @@ class ExecutionEnvironment(ABC):
     def __init__(self):
         pass
 
+    @abstractmethod
+    def get_specs_dict(self):
+        """
+        returns a dictionary with the specifications of the execution environment. It is used to get the data to store
+        in the db.
+        """
+        pass
 
 class ExecutionEnvironmentRequest:
 

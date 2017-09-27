@@ -28,8 +28,13 @@ if __name__ == '__main__':
 
     os.environ['BENCHSUITE_CONFIG_FOLDER'] = '/home/ggiammat/projects/ENG.CloudPerfect/workspace/testing/bsconfig'
     logging.basicConfig(level=logging.DEBUG)
-    with BenchmarkingController() as bc:
-        e = bc.new_execution('9ca3b4ce-f652-4faf-8e48-267f3f4c1460', 'filebench', 'varmail_short')
-        #e = bc.get_execution('0839b5ee-88d5-11e7-9f96-742b62857160')
-        e.test.parser.get_metrics('asd', 'ciao')
 
+    with BenchmarkingController() as bc:
+
+        s = bc.new_session('amazon-us-west-1', 'ubuntu_14_micro')
+        #s = bc.new_session('filab-vicenza', 'ubuntu_small')
+        e = bc.new_execution(s.id, 'filebench', 'varmail_short')
+
+        bc.prepare_execution(e.id)
+
+        print('Done')
