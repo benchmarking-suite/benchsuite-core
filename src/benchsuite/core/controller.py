@@ -24,7 +24,7 @@ from typing import Dict, Tuple, List
 from benchsuite.core.config import ControllerConfiguration
 from benchsuite.core.model.benchmark import load_benchmark_from_config_file
 from benchsuite.core.model.exception import ControllerConfigurationException, UndefinedExecutionException, \
-    BashCommandExecutionFailedException, dump_BashCommandExecution_exception
+    BashCommandExecutionFailedException, dump_BashCommandExecution_exception, NoExecuteCommandsFound
 from benchsuite.core.model.execution import BenchmarkExecution
 from benchsuite.core.model.provider import load_service_provider_from_config_file, load_provider_from_config_string
 from benchsuite.core.model.session import BenchmarkingSession
@@ -86,7 +86,7 @@ class BenchmarkingController():
     def get_session(self, session_id: str) -> BenchmarkingSession:
         return self.session_storage.get(session_id)
 
-    def new_session(self, cloud_provider_name: str, cloud_service_name: str) -> BenchmarkingSession:
+    def new_session(self, cloud_provider_name: str, cloud_service_name: str, properties={}) -> BenchmarkingSession:
 
         # service type is not provided via argument. Try to load from env variable
         # Even if not provided, it is fine if the provider has only one service type
@@ -107,6 +107,7 @@ class BenchmarkingController():
             p = load_service_provider_from_config_file(c, cloud_service_name)
 
         s = BenchmarkingSession(p)
+        s.add_all_props(properties)
         self.session_storage.add(s)
         return s
 
@@ -171,6 +172,10 @@ class BenchmarkingController():
             r = e.execute(async=async)
             self.store_execution_result(exec_id)
             return r
+
+        except NoExecuteCommandsFound as ex:
+            logger.error('The benchmark configuration does not define any command for this platform. Aborting the execution')
+            raise ex
 
         except BashCommandExecutionFailedException as ex:
             error_file = 'last_cmd_error_{0}.dump'.format(exec_id)

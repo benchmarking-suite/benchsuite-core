@@ -33,6 +33,17 @@ class BenchmarkingSession:
         self.id = str(uuid.uuid4())
         self.created = time.time()
         self.executions = {}
+        self.props = {}
+
+    def add_prop(self, name, value):
+        self.props[name] = value
+
+    def set_props(self, props):
+        self.props = props
+
+    def add_all_props(self, props):
+        for k,v in props.items():
+            self.props[k] = v
 
     def new_execution(self, benchmark):
         e = BenchmarkExecution(benchmark, self)

@@ -49,6 +49,7 @@ class ExecutionResult:
         self.service_type = None
         self.metrics = None
         self.logs = None
+        self.properties = {}
 
 
 
@@ -103,7 +104,7 @@ class BenchmarkExecution:
         e.exec_env = self.exec_env.get_specs_dict()
         stdout, stderr = self.test.get_result(self)
         e.logs = {'stdout': stdout, 'stderr': stderr}
-
+        e.properties.update(self.session.props)
         if self.test.parser:
             e.metrics = self.test.parser.get_metrics(stdout, stderr)
 

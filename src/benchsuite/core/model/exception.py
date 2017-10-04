@@ -22,23 +22,27 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-
-class UndefinedExecutionException(Exception):
+class BaseBenchmarkingSuiteException(Exception):
     pass
 
-class UndefinedSessionException(Exception):
+class UndefinedExecutionException(BaseBenchmarkingSuiteException):
     pass
 
-class ControllerConfigurationException(Exception):
+class UndefinedSessionException(BaseBenchmarkingSuiteException):
     pass
 
-class BenchmarkConfigurationException(Exception):
+class ControllerConfigurationException(BaseBenchmarkingSuiteException):
     pass
 
-class ProviderConfigurationException(Exception):
+class BenchmarkConfigurationException(BaseBenchmarkingSuiteException):
     pass
 
-class BashCommandExecutionFailedException(Exception):
+class ProviderConfigurationException(BaseBenchmarkingSuiteException):
+    pass
+
+
+# TODO: this type of error should go in stdlib. Here we need a more generic exception
+class BashCommandExecutionFailedException(BaseBenchmarkingSuiteException):
 
     def __init__(self, *args: Any) -> None:
         super().__init__(*args)
@@ -47,6 +51,9 @@ class BashCommandExecutionFailedException(Exception):
         self.stdout = None
         self.stderr = None
 
+
+class NoExecuteCommandsFound(BaseBenchmarkingSuiteException):
+    pass
 
 def dump_BashCommandExecution_exception(e, dump_file):
     with open(dump_file, "w") as text_file:
