@@ -214,7 +214,7 @@ class BenchmarkingController():
                 for tool, workload in tests:
 
                     if not workload:
-                        workloads = self.configuration.get_benchmark_by_name(tool).workloads
+                        workloads = [ w['id'] for w in self.configuration.get_benchmark_by_name(tool).workloads]
                     else:
                         workloads = [workload]
 
