@@ -41,7 +41,8 @@ class ServiceProviderConfiguration():
         config = configparser.ConfigParser()
         config.read(config_file)
 
-        sections = [s for s in list(config.keys()) if s != 'DEFAULT' and s != 'provider']
+        # TODO: libcloud_extra_params should not go here because it is something dependant from the implemetnation of
+        sections = [s for s in list(config.keys()) if s != 'DEFAULT' and s != 'provider' and s != 'libcloud_extra_params']
 
         self.service_types = sections
 

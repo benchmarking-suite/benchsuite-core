@@ -48,6 +48,10 @@ class ServiceProvider(ABC):
     def load_from_config_file(config, service_type):
         pass
 
+    @abstractmethod
+    def get_provder_properties_dict(self):
+        """This is used to create the dictionary to store in the MongoDB"""
+        pass
 
 def load_service_provider_from_config_file(config_file, service_type=None) -> ServiceProvider:
     if not os.path.isfile(config_file):

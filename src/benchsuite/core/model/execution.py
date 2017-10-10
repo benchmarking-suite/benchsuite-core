@@ -23,6 +23,7 @@ from abc import ABC, abstractmethod
 
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -50,6 +51,7 @@ class ExecutionResult:
         self.metrics = None
         self.logs = None
         self.properties = {}
+        self.provider = {}
 
 
 
@@ -99,8 +101,7 @@ class BenchmarkExecution:
         e.duration = self.last_run_info.duration
         e.tool = self.test.tool_id
         e.workload = self.test.workload_id
-        e.provider = self.session.provider.name
-        e.service_type = self.session.provider.service_type
+        e.provider = self.session.provider.get_provder_properties_dict()
         e.exec_env = self.exec_env.get_specs_dict()
         stdout, stderr = self.test.get_result(self)
         e.logs = {'stdout': stdout, 'stderr': stderr}
