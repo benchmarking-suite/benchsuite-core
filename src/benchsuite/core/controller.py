@@ -28,20 +28,21 @@ from benchsuite.core.model.exception import ControllerConfigurationException, Un
 from benchsuite.core.model.execution import BenchmarkExecution
 from benchsuite.core.model.provider import load_service_provider_from_config_file, load_provider_from_config_string
 from benchsuite.core.model.session import BenchmarkingSession
-from benchsuite.core.model.storage import load_storage_connector_from_confif_file
+from benchsuite.core.model.storage import load_storage_connector_from_config_file, load_storage_connector_from_config_string
 from benchsuite.core.sessionmanager import SessionStorageManager
 
 
 CONFIG_FOLDER_ENV_VAR_NAME = 'BENCHSUITE_CONFIG_FOLDER'
 PROVIDER_STRING_ENV_VAR_NAME = 'BENCHSUITE_PROVIDER'
 SERVICE_TYPE_STRING_ENV_VAR_NAME = 'BENCHSUITE_SERVICE_TYPE'
+STORAGE_CONFIG_FILE_ENV_VAR = 'BENCHSUITE_STORAGE_CONFIG'
 
 logger = logging.getLogger(__name__)
 
 
 class BenchmarkingController():
 
-    def __init__(self, config_folder=None):
+    def __init__(self, config_folder=None, storage_config_file=None):
 
         if not config_folder and CONFIG_FOLDER_ENV_VAR_NAME in os.environ :
             config_folder = os.environ[CONFIG_FOLDER_ENV_VAR_NAME]
@@ -53,7 +54,21 @@ class BenchmarkingController():
         self.session_storage.load()
 
         try:
-            self.results_storage = load_storage_connector_from_confif_file(self.configuration.get_storage_config_file())
+            # different ways to load the storage configuration:
+            # 1. use the storage_config_file argument if initialized (the -r option in the CLI)
+            # 2. use the content of the BENCHSUITE_STORAGE_CONFIG environment variable
+            # 3. use the default location in the configuration folder
+
+            if storage_config_file:
+                logger.info('Loading storage configuration from file ' + storage_config_file)
+                self.results_storage = load_storage_connector_from_config_file(storage_config_file)
+            elif STORAGE_CONFIG_FILE_ENV_VAR in os.environ:
+                logger.info('Loading storage configuration from {0} env variable'.format(STORAGE_CONFIG_FILE_ENV_VAR))
+                self.results_storage = load_storage_connector_from_config_string(os.environ[STORAGE_CONFIG_FILE_ENV_VAR])
+            else:
+                logger.info('Loading storage configuration from default location ' + self.configuration.get_storage_config_file())
+                self.results_storage = load_storage_connector_from_config_file(self.configuration.get_storage_config_file())
+
         except ControllerConfigurationException:
             logger.warning('Results storage configuration file not found. Results storage of results is disabled')
             self.results_storage = None

@@ -50,12 +50,12 @@ class SimpleFileBackend(StorageConnector):
         logger.debug('Loading %s', SimpleFileBackend.__module__ + "." + __class__.__name__)
 
 
-def load_storage_connector_from_confif_file(config_file):
-    if not os.path.isfile(config_file):
-        raise ControllerConfigurationException('Config file {0} does not exist'.format(config_file))
-
+def load_storage_connector_from_config_string(config_string):
     config = configparser.ConfigParser()
-    config.read(config_file)
+    config.read_string(config_string)
+    return load_storage_connector_from_config(config)
+
+def load_storage_connector_from_config(config):
     storage_class = config['Storage']['class']
 
     module_name, class_name = storage_class.rsplit('.', 1)
@@ -65,3 +65,11 @@ def load_storage_connector_from_confif_file(config_file):
     clazz = getattr(module, class_name)
 
     return clazz.load_from_config(config)
+
+def load_storage_connector_from_config_file(config_file):
+    if not os.path.isfile(config_file):
+        raise ControllerConfigurationException('Config file {0} does not exist'.format(config_file))
+
+    config = configparser.ConfigParser()
+    config.read(config_file)
+    return load_storage_connector_from_config(config)
