@@ -215,7 +215,7 @@ class BenchmarkingController():
     #
     # MULTIEXEC
     #
-    def execute_onestep(self, provider, service_type: str, tests: List[Tuple[str, str]]) -> None:
+    def execute_onestep(self, provider, service_type: str, tests: List[Tuple[str, str]], new_session_props=None) -> None:
 
         if not service_type:
             s_types = self.configuration.get_provider_by_name(provider).service_types
@@ -223,7 +223,7 @@ class BenchmarkingController():
             s_types = [service_type]
 
         for st in s_types:
-            session = self.new_session(provider, st)
+            session = self.new_session(provider, st, properties=new_session_props)
             try:
 
                 for tool, workload in tests:
@@ -240,7 +240,7 @@ class BenchmarkingController():
                             self.run_execution(execution.id)
 
                         except Exception as ex:
-                            logger.error('Exception running {0}:{1}. Ignoring and continuing with the next test'.format(tool, w))
+                            logger.error('Unhandled exception ({2}) running {0}:{1}. Ignoring and continuing with the next test'.format(tool, w, str(ex)))
 
             except Exception as ex:
                 raise ex
