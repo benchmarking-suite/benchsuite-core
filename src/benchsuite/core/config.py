@@ -19,6 +19,7 @@
 
 import configparser
 import glob
+import json
 import os
 import ntpath
 
@@ -38,8 +39,13 @@ class ServiceProviderConfiguration():
     def __init__(self, config_file):
         self.name = ntpath.basename(config_file)[:-5]
 
-        config = configparser.ConfigParser()
-        config.read(config_file)
+        # TODO: use here the functions in provider.py to load the providers from the configuration
+        try:
+            with open(config_file) as f:
+                config = json.load(f)
+        except ValueError as ex:
+            config = configparser.ConfigParser()
+            config.read(config_file)
 
         # TODO: libcloud_extra_params should not go here because it is something dependant from the implemetnation of
         sections = [s for s in list(config.keys()) if s != 'DEFAULT' and s != 'provider' and s != 'libcloud_extra_params']
