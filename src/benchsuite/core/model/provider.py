@@ -69,8 +69,12 @@ def load_service_provider_from_config_file(config_file, service_type=None) -> Se
 
 
 def load_provider_from_config_string(config_string, service_type=None):
-    config = configparser.ConfigParser()
-    config.read_string(config_string)
+
+    try:
+        config = json.loads(config_string)
+    except ValueError as ex:
+        config = configparser.ConfigParser()
+        config.read_string(config_string)
 
     return load_provider_from_config(config, service_type)
 

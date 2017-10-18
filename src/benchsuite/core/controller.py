@@ -114,12 +114,7 @@ class BenchmarkingController():
             # provider configuration is not provided via argument. Try to load from environment
             if PROVIDER_STRING_ENV_VAR_NAME in os.environ:
                 provider_config = os.environ[PROVIDER_STRING_ENV_VAR_NAME]
-
-                try:
-                    conf = json.loads(provider_config)
-                    p = load_provider_from_config(conf, cloud_service_name)
-                except ValueError as ex:
-                    p = load_provider_from_config_string(provider_config, cloud_service_name)
+                p = load_provider_from_config_string(provider_config, cloud_service_name)
 
             else:
                 raise ControllerConfigurationException('Provider must be specified either '
