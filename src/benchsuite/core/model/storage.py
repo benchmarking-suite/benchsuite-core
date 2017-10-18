@@ -17,6 +17,7 @@
 # Developed in the ARTIST EU project (www.artist-project.eu) and in the
 # CloudPerfect EU project (https://cloudperfect.eu/)
 import configparser
+import json
 import os
 from abc import ABC, abstractmethod
 
@@ -70,6 +71,11 @@ def load_storage_connector_from_config_file(config_file):
     if not os.path.isfile(config_file):
         raise ControllerConfigurationException('Config file {0} does not exist'.format(config_file))
 
-    config = configparser.ConfigParser()
-    config.read(config_file)
+    try:
+        with open(config_file) as f:
+            config = json.load(f)
+    except ValueError as ex:
+        config = configparser.ConfigParser()
+        config.read(config_file)
+
     return load_storage_connector_from_config(config)

@@ -86,6 +86,7 @@ class ControllerConfiguration():
     CLOUD_PROVIDERS_DIR = 'providers'
     BENCHMARKS_DIR = 'benchmarks'
     STORAGE_CONFIG_FILE = 'storage.conf'
+    STORAGE_JSON_CONFIG_FILE = 'storage.json'
 
     def __init__(self, alternative_config_dir=None):
 
@@ -170,11 +171,18 @@ class ControllerConfiguration():
         """
         if self.alternative_config_dir:
             file = os.path.join(self.alternative_config_dir, self.STORAGE_CONFIG_FILE)
+            if os.path.isfile(file):
+                return file
 
+            file = os.path.join(self.alternative_config_dir, self.STORAGE_JSON_CONFIG_FILE)
             if os.path.isfile(file):
                 return file
 
         file = os.path.join(self.default_config_dir, self.STORAGE_CONFIG_FILE)
+        if os.path.isfile(file):
+            return file
+
+        file = os.path.join(self.default_config_dir, self.STORAGE_JSON_CONFIG_FILE)
         if os.path.isfile(file):
             return file
 

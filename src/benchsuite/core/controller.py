@@ -18,6 +18,7 @@
 # CloudPerfect EU project (https://cloudperfect.eu/)
 
 import os
+import json
 import logging
 from typing import Dict, Tuple, List
 
@@ -26,7 +27,8 @@ from benchsuite.core.model.benchmark import load_benchmark_from_config_file
 from benchsuite.core.model.exception import ControllerConfigurationException, UndefinedExecutionException, \
     BashCommandExecutionFailedException, dump_BashCommandExecution_exception, NoExecuteCommandsFound
 from benchsuite.core.model.execution import BenchmarkExecution
-from benchsuite.core.model.provider import load_service_provider_from_config_file, load_provider_from_config_string
+from benchsuite.core.model.provider import load_service_provider_from_config_file, load_provider_from_config, \
+    load_provider_from_config_string
 from benchsuite.core.model.session import BenchmarkingSession
 from benchsuite.core.model.storage import load_storage_connector_from_config_file, load_storage_connector_from_config_string
 from benchsuite.core.sessionmanager import SessionStorageManager
@@ -112,7 +114,13 @@ class BenchmarkingController():
             # provider configuration is not provided via argument. Try to load from environment
             if PROVIDER_STRING_ENV_VAR_NAME in os.environ:
                 provider_config = os.environ[PROVIDER_STRING_ENV_VAR_NAME]
-                p = load_provider_from_config_string(provider_config, cloud_service_name)
+
+                try:
+                    conf = json.loads(provider_config)
+                    p = load_provider_from_config(conf, cloud_service_name)
+                except ValueError as ex:
+                    p = load_provider_from_config_string(provider_config, cloud_service_name)
+
             else:
                 raise ControllerConfigurationException('Provider must be specified either '
                                                        'via argument (--provider) or via environment '
@@ -126,8 +134,8 @@ class BenchmarkingController():
         self.session_storage.add(s)
         return s
 
-    def new_session_by_config_string(self, configuration_string: str) -> BenchmarkingSession:
-        p = load_provider_from_config_string(configuration_string)
+    def new_session_by_config(self, configuration_string: str) -> BenchmarkingSession:
+        p = load_provider_from_config(configuration_string)
         s = BenchmarkingSession(p)
         self.session_storage.add(s)
         return s

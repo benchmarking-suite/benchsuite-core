@@ -18,6 +18,7 @@
 # CloudPerfect EU project (https://cloudperfect.eu/)
 
 import configparser
+import json
 import os
 import sys
 import uuid
@@ -57,8 +58,13 @@ def load_service_provider_from_config_file(config_file, service_type=None) -> Se
     if not os.path.isfile(config_file):
         raise ControllerConfigurationException('Config file {0} does not exist'.format(config_file))
 
-    config = configparser.ConfigParser()
-    config.read(config_file)
+    try:
+        with open(config_file) as f:
+            config = json.load(f)
+    except ValueError as ex:
+        config = configparser.ConfigParser()
+        config.read(config_file)
+
     return load_provider_from_config(config, service_type)
 
 
@@ -69,7 +75,7 @@ def load_provider_from_config_string(config_string, service_type=None):
     return load_provider_from_config(config, service_type)
 
 
-def load_provider_from_config(config, service_type):
+def load_provider_from_config(config, service_type=None):
     provider_class = config['provider']['class']
 
     module_name, class_name = provider_class.rsplit('.', 1)
