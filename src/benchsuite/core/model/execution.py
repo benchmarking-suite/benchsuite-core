@@ -107,8 +107,10 @@ class BenchmarkExecution:
         e.logs = {'stdout': stdout, 'stderr': stderr}
         e.properties.update(self.session.props)
         if self.test.parser:
-            e.metrics = self.test.parser.get_metrics(stdout, stderr)
-
+            try:
+                e.metrics = self.test.parser.get_metrics(stdout, stderr)
+            except Exception as ex:
+                logger.error('Error parsing execution results: '.format(str(ex)))
         return e
 
     def collect_result(self):

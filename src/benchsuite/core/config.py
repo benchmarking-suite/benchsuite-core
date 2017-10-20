@@ -150,21 +150,8 @@ class ControllerConfiguration():
 
         return benchmarks
 
-
     def get_provider_by_name(self, name: str) -> ServiceProviderConfiguration:
-
-        if os.path.isfile(name):
-            return ServiceProviderConfiguration(name)
-
-        if self.alternative_config_dir:
-            for n in glob.glob(os.path.join(self.alternative_config_dir, self.CLOUD_PROVIDERS_DIR, name + '.conf')):
-                return ServiceProviderConfiguration(n)
-
-        for n in glob.glob(os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR, name + '.conf')):
-            return ServiceProviderConfiguration(n)
-
-        raise ControllerConfigurationException('Provider with name {0} does not exist'.format(name))
-
+        return ServiceProviderConfiguration(self.get_provider_config_file(name))
 
     def get_benchmark_by_name(self, name):
 
