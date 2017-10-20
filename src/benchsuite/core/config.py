@@ -44,8 +44,11 @@ class ServiceProviderConfiguration():
             with open(config_file) as f:
                 config = json.load(f)
         except ValueError as ex:
-            config = configparser.ConfigParser()
-            config.read(config_file)
+            try:
+                config = configparser.ConfigParser()
+                config.read(config_file)
+            except Exception as ex:
+                raise ControllerConfigurationException('Invalid configuration provided: {0}'.format(str(ex)))
 
         # TODO: libcloud_extra_params should not go here because it is something dependant from the implemetnation of
         sections = [s for s in list(config.keys()) if s != 'DEFAULT' and s != 'provider' and s != 'libcloud_extra_params']
@@ -117,11 +120,17 @@ class ControllerConfiguration():
         providers = []
 
         if self.alternative_config_dir:
-            for n in glob.glob(os.path.join(self.alternative_config_dir, self.CLOUD_PROVIDERS_DIR, '*.conf')):
-                providers.append(ServiceProviderConfiguration(n))
+            for n in glob.glob(os.path.join(self.alternative_config_dir, self.CLOUD_PROVIDERS_DIR, '*')):
+                try:
+                    providers.append(ServiceProviderConfiguration(n))
+                except ControllerConfigurationException:
+                    pass
 
-        for n in glob.glob(os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR, '*.conf')):
-            providers.append(ServiceProviderConfiguration(n))
+        for n in glob.glob(os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR, '*')):
+            try:
+                providers.append(ServiceProviderConfiguration(n))
+            except ControllerConfigurationException:
+                pass
 
         return providers
 
@@ -200,15 +209,14 @@ class ControllerConfiguration():
             return name
 
         if self.alternative_config_dir:
-            file = os.path.join(self.alternative_config_dir, self.CLOUD_PROVIDERS_DIR, name + ".conf")
+            for f in os.listdir(os.path.join(self.alternative_config_dir, self.CLOUD_PROVIDERS_DIR)):
+                if os.path.splitext(f)[0] == name:
+                    return os.path.join(self.alternative_config_dir, self.CLOUD_PROVIDERS_DIR, f)
 
-            if os.path.isfile(file):
-                return file
 
-        file = os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR, name + ".conf")
-
-        if os.path.isfile(file):
-            return file
+        for f in os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR):
+            if os.path.splitext(f)[0] == name:
+                return os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR, f)
 
         raise ControllerConfigurationException('Impossible to find prodiver configuration for {0}'.format(name))
 
