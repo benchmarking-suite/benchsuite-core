@@ -21,7 +21,6 @@ import configparser
 import glob
 import json
 import os
-import ntpath
 
 import logging
 from appdirs import user_data_dir, user_config_dir
@@ -37,7 +36,7 @@ class ServiceProviderConfiguration():
     """
 
     def __init__(self, config_file):
-        self.name = ntpath.basename(config_file)[:-5]
+        self.name = os.path.splitext(os.path.basename(config_file))[0]
 
         # TODO: use here the functions in provider.py to load the providers from the configuration
         try:
@@ -65,7 +64,7 @@ class BenchmarkToolConfiguration():
     """
 
     def __init__(self, config_file):
-        self.id = ntpath.basename(config_file)[:-5]
+        self.id = os.path.basename(config_file)[:-5]
 
         config = configparser.ConfigParser()
         config.read(config_file)
@@ -120,17 +119,22 @@ class ControllerConfiguration():
         providers = []
 
         if self.alternative_config_dir:
-            for n in glob.glob(os.path.join(self.alternative_config_dir, self.CLOUD_PROVIDERS_DIR, '*')):
+            for f in os.listdir(os.path.join(self.alternative_config_dir, self.CLOUD_PROVIDERS_DIR)):
+                if os.path.splitext(f)[1] in ['.conf', '.json']:
+                    try:
+                        n = os.path.join(self.alternative_config_dir, self.CLOUD_PROVIDERS_DIR, f)
+                        providers.append(ServiceProviderConfiguration(n))
+                    except ControllerConfigurationException:
+                        pass
+
+
+        for f in os.listdir(os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR)):
+            if os.path.splitext(f)[1] in ['.conf', '.json']:
                 try:
+                    n = os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR, f)
                     providers.append(ServiceProviderConfiguration(n))
                 except ControllerConfigurationException:
                     pass
-
-        for n in glob.glob(os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR, '*')):
-            try:
-                providers.append(ServiceProviderConfiguration(n))
-            except ControllerConfigurationException:
-                pass
 
         return providers
 
