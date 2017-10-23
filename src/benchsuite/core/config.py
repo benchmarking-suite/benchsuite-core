@@ -205,7 +205,7 @@ class ControllerConfiguration():
                     return os.path.join(self.alternative_config_dir, self.CLOUD_PROVIDERS_DIR, f)
 
 
-        for f in os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR):
+        for f in os.listdir(os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR)):
             if os.path.splitext(f)[0] == name:
                 return os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR, f)
 
