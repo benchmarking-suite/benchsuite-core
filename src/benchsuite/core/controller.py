@@ -218,7 +218,10 @@ class BenchmarkingController():
     #
     # MULTIEXEC
     #
-    def execute_onestep(self, provider, service_type: str, tests: List[Tuple[str, str]], new_session_props=None) -> None:
+    def execute_onestep(self, provider, service_type: str,
+                        tests: List[Tuple[str, str]],
+                        new_session_props=None,
+                        fail_on_error=False) -> None:
 
         if not service_type:
             s_types = self.configuration.get_provider_by_name(provider).service_types
@@ -244,6 +247,8 @@ class BenchmarkingController():
 
                         except Exception as ex:
                             logger.error('Unhandled exception ({2}) running {0}:{1}. Ignoring and continuing with the next test'.format(tool, w, str(ex)))
+                            if fail_on_error:
+                                raise ex
 
             except Exception as ex:
                 raise ex
