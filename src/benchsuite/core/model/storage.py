@@ -26,6 +26,7 @@ import sys
 import logging
 
 from benchsuite.core.model.exception import ControllerConfigurationException
+from benchsuite.core.model.execution import ExecutionError
 
 logger = logging.getLogger(__name__)
 
@@ -38,6 +39,11 @@ class StorageConnector(ABC):
         saves an execution result on the storage backend
         :param execution_result: the execution result to save
         """
+        pass
+
+    @abstractmethod
+    def save_execution_error(self, execution_error: ExecutionError):
+        """saves the execution error"""
         pass
 
     @staticmethod

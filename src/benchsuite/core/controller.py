@@ -20,13 +20,18 @@
 import os
 import json
 import logging
+import traceback
 from typing import Dict, Tuple, List
+
+import datetime
+
+from dateutil.tz import tzlocal
 
 from benchsuite.core.config import ControllerConfiguration
 from benchsuite.core.model.benchmark import load_benchmark_from_config_file
 from benchsuite.core.model.exception import ControllerConfigurationException, UndefinedExecutionException, \
     BashCommandExecutionFailedException, dump_BashCommandExecution_exception, NoExecuteCommandsFound
-from benchsuite.core.model.execution import BenchmarkExecution
+from benchsuite.core.model.execution import BenchmarkExecution, ExecutionError
 from benchsuite.core.model.provider import load_service_provider_from_config_file, load_provider_from_config, \
     load_provider_from_config_string
 from benchsuite.core.model.session import BenchmarkingSession
@@ -169,6 +174,24 @@ class BenchmarkingController():
         e = s.new_execution(b)
         return e
 
+
+    def __store_execution_error(self, execution: BenchmarkExecution, exception, phase):
+
+        if not self.results_storage:
+            logger.warning('Results storage not configured. The logging of the exception is disabled')
+
+        exec_err_obj = ExecutionError()
+        exec_err_obj.timestamp = datetime.datetime.now(tz=tzlocal())
+        exec_err_obj.tool = execution.test.tool_id
+        exec_err_obj.workload = execution.test.workload_id
+        exec_err_obj.provider = execution.session.provider.get_provder_properties_dict()
+        exec_err_obj.exec_env = execution.exec_env.get_specs_dict()
+        exec_err_obj.phase = phase
+        exec_err_obj.exception_type = type(exception).__name__
+        exec_err_obj.exception_data = exception.__dict__
+        exec_err_obj.traceback = traceback.format_exc()
+        self.results_storage.save_execution_error(exec_err_obj)
+
     def prepare_execution(self, exec_id, session_id=None):
         e = self.get_execution(exec_id, session_id)
         logger.debug("Execution loaded: {0}".format(e))
@@ -180,6 +203,7 @@ class BenchmarkingController():
             error_file = 'last_cmd_error_{0}.dump'.format(exec_id)
             logger.error('Exception executing commands, dumping to {0}'.format(error_file))
             dump_BashCommandExecution_exception(ex, error_file)
+            self.__store_execution_error(e, ex, 'prepare')
             logger.info('Continuing with the next test')
             raise ex
 
@@ -193,12 +217,14 @@ class BenchmarkingController():
 
         except NoExecuteCommandsFound as ex:
             logger.error('The benchmark configuration does not define any command for this platform. Aborting the execution')
+            self.__store_execution_error(e, ex, 'run')
             raise ex
 
         except BashCommandExecutionFailedException as ex:
             error_file = 'last_cmd_error_{0}.dump'.format(exec_id)
             logger.error('Exception executing commands, dumping to {0}'.format(error_file))
             dump_BashCommandExecution_exception(ex, error_file)
+            self.__store_execution_error(e, ex, 'run')
             logger.info('Continuing with the next test')
             raise ex
 

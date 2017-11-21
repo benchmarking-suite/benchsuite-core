@@ -46,12 +46,24 @@ class ExecutionResult:
         self.duration = -1
         self.tool = None
         self.workload = None
-        self.provider = None
         self.service_type = None
         self.metrics = None
         self.logs = None
         self.properties = {}
         self.provider = {}
+
+
+class ExecutionError:
+
+    def __init__(self):
+        self.tool = None
+        self.workload = None
+        self.provider = None
+        self.phase = None
+        self.exception_type = None
+        self.traceback = None
+        self.exception_data = None
+        self.timestamp = None
 
 
 
