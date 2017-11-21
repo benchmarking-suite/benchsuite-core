@@ -18,14 +18,11 @@
 # CloudPerfect EU project (https://cloudperfect.eu/)
 
 import os
-import json
 import logging
 import traceback
 from typing import Dict, Tuple, List
 
 import datetime
-
-from dateutil.tz import tzlocal
 
 from benchsuite.core.config import ControllerConfiguration
 from benchsuite.core.model.benchmark import load_benchmark_from_config_file
@@ -181,7 +178,7 @@ class BenchmarkingController():
             logger.warning('Results storage not configured. The logging of the exception is disabled')
 
         exec_err_obj = ExecutionError()
-        exec_err_obj.timestamp = datetime.datetime.now(tz=tzlocal())
+        exec_err_obj.timestamp = datetime.datetime.now()
         exec_err_obj.tool = execution.test.tool_id
         exec_err_obj.workload = execution.test.workload_id
         exec_err_obj.provider = execution.session.provider.get_provder_properties_dict()
