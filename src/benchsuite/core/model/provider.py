@@ -60,7 +60,8 @@ def load_service_provider_from_config_file(config_file, service_type=None) -> Se
 
     try:
         with open(config_file) as f:
-            config = json.load(f)
+            config = configparser.ConfigParser()
+            config.read_dict(json.load(f))
     except ValueError as ex:
         config = configparser.ConfigParser()
         config.read(config_file)
@@ -71,7 +72,8 @@ def load_service_provider_from_config_file(config_file, service_type=None) -> Se
 def load_provider_from_config_string(config_string, service_type=None):
 
     try:
-        config = json.loads(config_string)
+        config = configparser.ConfigParser()
+        config.read_dict(json.load(config_string))
     except ValueError as ex:
         config = configparser.ConfigParser()
         config.read_string(config_string)

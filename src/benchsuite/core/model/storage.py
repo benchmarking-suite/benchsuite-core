@@ -60,7 +60,8 @@ class SimpleFileBackend(StorageConnector):
 def load_storage_connector_from_config_string(config_string):
 
     try:
-        config = json.loads(config_string)
+        config = configparser.ConfigParser()
+        config.read_dict(json.loads(config_string))
     except ValueError as ex:
         config = configparser.ConfigParser()
         config.read_string(config_string)
@@ -84,7 +85,8 @@ def load_storage_connector_from_config_file(config_file):
 
     try:
         with open(config_file) as f:
-            config = json.load(f)
+            config = configparser.ConfigParser()
+            config.read_dict(json.load(f))
     except ValueError as ex:
         config = configparser.ConfigParser()
         config.read(config_file)

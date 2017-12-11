@@ -41,8 +41,10 @@ class ServiceProviderConfiguration():
         # TODO: use here the functions in provider.py to load the providers from the configuration
         try:
             with open(config_file) as f:
-                config = json.load(f)
+                config = configparser.ConfigParser()
+                config.read_dict(json.load(f))
         except ValueError as ex:
+            logger.warning('Got an exception trying to decode configuration file as json: ' + str(ex))
             try:
                 config = configparser.ConfigParser()
                 config.read(config_file)
