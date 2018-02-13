@@ -24,7 +24,6 @@ import pickle
 
 from benchsuite.core.model.exception import UndefinedSessionException
 
-STORAGE_SESSIONS_FILE = 'sessions.dat'
 
 
 logger = logging.getLogger(__name__)
@@ -32,8 +31,8 @@ logger = logging.getLogger(__name__)
 
 class SessionStorageManager:
 
-    def __init__(self, storage_dir):
-        self.storage_file = storage_dir + os.path.sep + STORAGE_SESSIONS_FILE
+    def __init__(self, storage_file):
+        self.storage_file = storage_file
         self.sessions = {}
 
     def load(self):
