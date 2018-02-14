@@ -37,12 +37,11 @@ from benchsuite.core.sessionmanager import SessionStorageManager
 
 
 CONFIG_FOLDER_ENV_VAR_NAME = 'BENCHSUITE_CONFIG_FOLDER'
-SESSION_STORAGE_FILE_ENV_VAR_NAME = 'BENCHSUITE_SESSIONS_FILE'
+DATA_FOLDER_ENV_VAR_NAME = 'BENCHSUITE_DATA_FOLDER'
 PROVIDER_STRING_ENV_VAR_NAME = 'BENCHSUITE_PROVIDER'
 SERVICE_TYPE_STRING_ENV_VAR_NAME = 'BENCHSUITE_SERVICE_TYPE'
 STORAGE_CONFIG_FILE_ENV_VAR = 'BENCHSUITE_STORAGE_CONFIG'
 
-DEFAULT_STORAGE_SESSIONS_FILE = 'sessions.dat'
 
 logger = logging.getLogger(__name__)
 
@@ -56,12 +55,11 @@ class BenchmarkingController():
 
         self.configuration = ControllerConfiguration(config_folder)
 
-        sessions_storage_file = self.configuration.get_default_data_dir() + os.path.sep + DEFAULT_STORAGE_SESSIONS_FILE
-        if SESSION_STORAGE_FILE_ENV_VAR_NAME in os.environ:
-            sessions_storage_file = os.environ[SESSION_STORAGE_FILE_ENV_VAR_NAME]
+        data_folder = self.configuration.get_default_data_dir()
+        if DATA_FOLDER_ENV_VAR_NAME in os.environ:
+            data_folder = os.environ[DATA_FOLDER_ENV_VAR_NAME]
 
-        logger.info('Loading sessions from {0}'.format(sessions_storage_file))
-        self.session_storage = SessionStorageManager(sessions_storage_file)
+        self.session_storage = SessionStorageManager(data_folder)
         self.session_storage.load()
 
         try:

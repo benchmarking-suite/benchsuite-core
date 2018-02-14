@@ -28,11 +28,12 @@ from benchsuite.core.model.exception import UndefinedSessionException
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_STORAGE_SESSIONS_FILE = 'sessions.dat'
 
 class SessionStorageManager:
 
-    def __init__(self, storage_file):
-        self.storage_file = storage_file
+    def __init__(self, folder):
+        self.storage_file = folder + os.path.sep + DEFAULT_STORAGE_SESSIONS_FILE
         self.sessions = {}
 
     def load(self):
