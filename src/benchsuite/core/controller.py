@@ -274,9 +274,13 @@ class BenchmarkingController():
                             self.run_execution(execution.id)
 
                         except Exception as ex:
-                            logger.error('Unhandled exception ({2}) running {0}:{1}. Ignoring and continuing with the next test'.format(tool, w, str(ex)))
                             if fail_on_error:
+                                logger.error('Unhandled exception({0}) running {1}:{2}. '
+                                             'Stopping here because "--failonerror" option is set'.format(str(ex), tool, w))
                                 raise ex
+                            else:
+                                logger.error('Unhandled exception ({0}) running {1}:{2}. '
+                                             'Ignoring and continuing with the next test'.format(str(ex), tool, w))
 
             except Exception as ex:
                 raise ex
