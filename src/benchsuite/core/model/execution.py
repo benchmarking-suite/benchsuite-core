@@ -110,7 +110,7 @@ class BenchmarkExecution:
 
         e = ExecutionResult()
         e.start = self.last_run_info.started
-        e.duration = self.last_run_info.duration
+        e.duration = self.test.get_runtime(self, 'run')
         e.tool = self.test.tool_id
         e.workload = self.test.workload_id
         e.provider = self.session.provider.get_provder_properties_dict()
@@ -118,7 +118,7 @@ class BenchmarkExecution:
         stdout, stderr = self.test.get_result(self)
         e.logs = {'stdout': stdout, 'stderr': stderr}
         e.properties.update(self.session.props)
-        e.metrics = {'duration': {'value': self.last_run_info.duration, 'unit': 's'}}
+        e.metrics = {'duration': {'value': e.duration, 'unit': 's'}}
         if self.test.parser:
             try:
                 e.metrics.update(self.test.parser.get_metrics(stdout, stderr))

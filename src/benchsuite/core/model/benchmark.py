@@ -58,6 +58,10 @@ class Benchmark:
     def get_result(self, execution):
         pass
 
+    @abstractmethod
+    def get_runtime(self, execution, phase):
+        pass
+
 
 
 def load_benchmark_from_config_file(config_file, tool, workload):
