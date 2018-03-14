@@ -214,7 +214,10 @@ class BenchmarkingController():
 
         try:
             r = e.execute(async=async)
-            self.store_execution_result(exec_id)
+
+            if not async:
+                self.store_execution_result(exec_id)
+
             return r
 
         except NoExecuteCommandsFound as ex:
