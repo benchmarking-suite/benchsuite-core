@@ -26,15 +26,12 @@ from benchsuite.core.controller import BenchmarkingController
 
 if __name__ == '__main__':
 
-    os.environ['BENCHSUITE_CONFIG_FOLDER'] = '/home/ggiammat/projects/ENG.CloudPerfect/workspace/testing/bsconfig'
+    os.environ['BENCHSUITE_CONFIG_FOLDER'] = '/home/ggiammat/test/benchsuite/'
     logging.basicConfig(level=logging.DEBUG)
 
     with BenchmarkingController() as bc:
 
-        s = bc.new_session('amazon-us-west-1', 'ubuntu_14_micro')
-        #s = bc.new_session('filab-vicenza', 'ubuntu_small')
-        e = bc.new_execution(s.id, 'filebench', 'varmail_short')
+        s = bc.new_session('filab-vicenza', 'ubuntu_14_medium')
 
-        bc.prepare_execution(e.id)
 
-        print('Done')
+        print(s)
