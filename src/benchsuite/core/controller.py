@@ -46,7 +46,8 @@ STORAGE_CONFIG_FILE_ENV_VAR = 'BENCHSUITE_STORAGE_CONFIG'
 logger = logging.getLogger(__name__)
 
 
-class BenchmarkingController():
+class BenchmarkingController:
+    """The facade to all Benchmarking Suite operations"""
 
     def __init__(self, config_folder=None, storage_config_file=None):
 
@@ -181,6 +182,7 @@ class BenchmarkingController():
 
         if not self.results_storage:
             logger.warning('Results storage not configured. The logging of the exception is disabled')
+            return
 
         exec_err_obj = ExecutionError()
         exec_err_obj.timestamp = datetime.datetime.now()
