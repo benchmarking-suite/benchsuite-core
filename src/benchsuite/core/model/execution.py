@@ -46,8 +46,7 @@ class ExecutionResult:
         self.duration = -1
         self.tool = None
         self.workload = None
-        self.category = None
-        self.subcategory = None
+        self.categories = None
         self.service_type = None
         self.metrics = None
         self.logs = None
@@ -114,8 +113,7 @@ class BenchmarkExecution:
         e.start = self.last_run_info.started
         e.duration = self.test.get_runtime(self, 'run')
         e.tool = self.test.tool_id
-        e.category = self.test.workload_category
-        e.subcategory = self.test.workload_subcategory
+        e.categories = self.test.workload_categories
         e.description = self.test.workload_description
         e.workload = self.test.workload_id
         e.provider = self.session.provider.get_provder_properties_dict()

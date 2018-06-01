@@ -31,15 +31,13 @@ class Benchmark:
     """
 
     def __init__(self, tool_id, workload_id, tool_name, workload_name,
-                 workload_category,
-                 workload_subcategory,
+                 workload_categories,
                  workload_description):
         self.tool_id = tool_id
         self.workload_id = workload_id
         self.tool_name = tool_name
         self.workload_name = workload_name
-        self.workload_category = workload_category
-        self.workload_subcategory = workload_subcategory
+        self.workload_categories = workload_categories
         self.workload_description = workload_description
 
     @staticmethod
