@@ -114,7 +114,7 @@ class BenchmarkExecution:
         e.duration = self.test.get_runtime(self, 'run')
         e.tool = self.test.tool_id
         e.categories = self.test.workload_categories
-        e.description = self.test.workload_description
+        e.workload_description = self.test.workload_description
         e.workload = self.test.workload_id
         e.provider = self.session.provider.get_provder_properties_dict()
         e.exec_env = self.exec_env.get_specs_dict()
