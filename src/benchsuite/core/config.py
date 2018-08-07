@@ -21,6 +21,7 @@ import configparser
 import glob
 import json
 import os
+import re
 
 import logging
 from appdirs import user_data_dir, user_config_dir
@@ -83,6 +84,9 @@ class BenchmarkToolConfiguration():
                 'workload_name': config[w]['workload_name'] if 'workload_name' in config[w] else None,
                 'workload_description': config[w]['workload_description'] if 'workload_description' in config[w] else None
             })
+
+    def find_workloads(self, regex):
+        return [w['id'] for w in self.workloads if re.match(regex, w['id'])]
 
     def __str__(self) -> str:
         return '{0}: {1}'.format(self.name, self.workloads)

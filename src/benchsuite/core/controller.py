@@ -18,6 +18,7 @@
 # CloudPerfect EU project (https://cloudperfect.eu/)
 
 import os
+import re
 import logging
 import traceback
 from typing import Dict, Tuple, List
@@ -270,7 +271,10 @@ class BenchmarkingController:
                     if not workload:
                         workloads = [ w['id'] for w in self.configuration.get_benchmark_by_name(tool).workloads]
                     else:
-                        workloads = [workload]
+                        if re.search(r'\*|\?', workload):
+                            workloads = self.configuration.get_benchmark_by_name(tool).find_workloads(workload)
+                        else:
+                            workloads = [workload]
 
                     for w in workloads:
                         execution = self.new_execution(session.id, tool, w)
