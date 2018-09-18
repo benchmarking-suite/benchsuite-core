@@ -255,7 +255,8 @@ class BenchmarkingController:
     def execute_onestep(self, provider, service_type: str,
                         tests: List[Tuple[str, str]],
                         new_session_props=None,
-                        fail_on_error=False) -> None:
+                        fail_on_error=False,
+                        destroy_session=True) -> None:
 
         if not service_type:
             s_types = self.configuration.get_provider_by_name(provider).service_types
@@ -295,5 +296,8 @@ class BenchmarkingController:
                 raise ex
 
             finally:  # make sure to always destroy the VMs created
-                session.destroy()
-                self.session_storage.remove(session)
+                if destroy_session:
+                    session.destroy()
+                    self.session_storage.remove(session)
+                else:
+                    logger.warn('Not deleting session because the "--keep-env" flag is set')
