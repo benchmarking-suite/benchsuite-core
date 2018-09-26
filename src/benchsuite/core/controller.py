@@ -256,7 +256,8 @@ class BenchmarkingController:
                         tests: List[Tuple[str, str]],
                         new_session_props=None,
                         fail_on_error=False,
-                        destroy_session=True) -> None:
+                        destroy_session=True,
+                        max_retry=1) -> None:
 
         if not service_type:
             s_types = self.configuration.get_provider_by_name(provider).service_types
@@ -279,18 +280,26 @@ class BenchmarkingController:
 
                     for w in workloads:
                         execution = self.new_execution(session.id, tool, w)
-                        try:
-                            self.prepare_execution(execution.id)
-                            self.run_execution(execution.id)
 
-                        except Exception as ex:
-                            if fail_on_error:
-                                logger.error('Unhandled exception({0}) running {1}:{2}. '
-                                             'Stopping here because "--failonerror" option is set'.format(str(ex), tool, w))
-                                raise ex
-                            else:
-                                logger.error('Unhandled exception ({0}) running {1}:{2}. '
-                                             'Ignoring and continuing with the next test'.format(str(ex), tool, w))
+                        retry_counter = max_retry
+
+                        while retry_counter > 0:
+                            retry_counter -= 1
+                            try:
+                                self.prepare_execution(execution.id)
+                                self.run_execution(execution.id)
+                                break
+
+                            except Exception as ex:
+                                if fail_on_error:
+                                    logger.error('Unhandled exception({0}) running {1}:{2}. '
+                                                 'Stopping here because "--failonerror" option is set'.format(str(ex), tool, w))
+                                    raise ex
+                                else:
+                                    msg = 'Retrying to execute the test for other {0} times'.format(retry_counter) \
+                                        if retry_counter > 0 else 'Max retry count ({0}) exceeded. Ignoring and continuing with the next test'.format(max_retry)
+                                    logger.error('Unhandled exception ({0}) running {1}:{2}. '
+                                             '{3}'.format(str(ex), tool, w, msg))
 
             except Exception as ex:
                 raise ex
