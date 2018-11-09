@@ -236,6 +236,20 @@ class BenchmarkingController:
             logger.info('Continuing with the next test')
             raise ex
 
+    def cleanup_execution(self, exec_id, session_id=None):
+        e = self.get_execution(exec_id, session_id)
+
+        try:
+            return e.cleanup()
+
+        except BashCommandExecutionFailedException as ex:
+            error_file = 'last_cmd_error_{0}.dump'.format(exec_id)
+            logger.error('Exception executing commands, dumping to {0}'.format(error_file))
+            dump_BashCommandExecution_exception(ex, error_file)
+            self.__store_execution_error(e, ex, 'prepare')
+            logger.info('Continuing with the next test')
+            raise ex
+
     def collect_execution_results(self, exec_id, session_id=None):
         e = self.get_execution(exec_id, session_id)
         return e.collect_result()
@@ -288,6 +302,7 @@ class BenchmarkingController:
                             try:
                                 self.prepare_execution(execution.id)
                                 self.run_execution(execution.id)
+                                self.cleanup_execution(execution.id)
                                 break
 
                             except Exception as ex:

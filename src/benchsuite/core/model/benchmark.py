@@ -58,6 +58,10 @@ class Benchmark:
         pass
 
     @abstractmethod
+    def cleanup(self, execution):
+        pass
+
+    @abstractmethod
     def get_result(self, execution):
         pass
 

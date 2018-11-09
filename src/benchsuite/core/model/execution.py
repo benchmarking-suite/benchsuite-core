@@ -105,6 +105,13 @@ class BenchmarkExecution:
         self.last_run_info = ret
         return ret
 
+    def cleanup(self) -> ExecutionCommandInfo:
+        ret = ExecutionCommandInfo()
+        ret.started = time.time()
+        self.test.cleanup(self)
+        ret.duration = time.time() - ret.started
+        return ret
+
     def get_execution_result(self) -> ExecutionResult:
         if not self.last_run_info:
             return None
