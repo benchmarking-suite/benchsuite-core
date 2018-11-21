@@ -190,7 +190,7 @@ class BenchmarkingController:
         exec_err_obj.tool = execution.test.tool_id
         exec_err_obj.workload = execution.test.workload_id
         exec_err_obj.provider = execution.session.provider.get_provder_properties_dict()
-        exec_err_obj.exec_env = execution.exec_env.get_specs_dict()
+        exec_err_obj.exec_env = execution.exec_env.get_specs_dict() if execution.exec_env else "Not available"
         exec_err_obj.phase = phase
         exec_err_obj.exception_type = type(exception).__name__
         exec_err_obj.exception_data = exception.__dict__
@@ -311,10 +311,13 @@ class BenchmarkingController:
                                                  'Stopping here because "--failonerror" option is set'.format(str(ex), tool, w))
                                     raise ex
                                 else:
-                                    msg = 'Retrying to execute the test for other {0} times'.format(retry_counter) \
-                                        if retry_counter > 0 else 'Max retry count ({0}) exceeded. Ignoring and continuing with the next test'.format(max_retry)
-                                    logger.error('Unhandled exception ({0}) running {1}:{2}. '
-                                             '{3}'.format(str(ex), tool, w, msg))
+                                    if retry_counter > 0:
+                                        msg = 'Retrying to execute the test for other {0} times'.format(retry_counter)
+                                        logger.error('Unhandled exception ({0}) running {1}:{2}. {3}'.format(str(ex), tool, w, msg))
+                                    else:
+                                        msg = 'Max retry count ({0}) exceeded. Ignoring and continuing with the next test'.format(max_retry)
+                                        logger.error('Unhandled exception ({0}) running {1}:{2}. {3}'.format(str(ex), tool, w, msg))
+                                        self.__store_execution_error(execution, ex, 'create')
 
             except Exception as ex:
                 raise ex
