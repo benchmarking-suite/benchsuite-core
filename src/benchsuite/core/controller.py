@@ -306,19 +306,17 @@ class BenchmarkingController:
                                 break
 
                             except Exception as ex:
-                                if fail_on_error:
-                                    logger.error('Unhandled exception({0}) running {1}:{2}. '
-                                                 'Stopping here because "--failonerror" option is set'.format(str(ex), tool, w))
-                                    raise ex
+                                if retry_counter > 0:
+                                    msg = 'Retrying to execute the test for other {0} times'.format(retry_counter)
+                                    logger.error('Unhandled exception ({0}) running {1}:{2}. {3}'.format(str(ex), tool, w, msg))
                                 else:
-                                    if retry_counter > 0:
-                                        msg = 'Retrying to execute the test for other {0} times'.format(retry_counter)
-                                        logger.error('Unhandled exception ({0}) running {1}:{2}. {3}'.format(str(ex), tool, w, msg))
-                                    else:
-                                        msg = 'Max retry count ({0}) exceeded. Ignoring and continuing with the next test'.format(max_retry)
-                                        logger.error('Unhandled exception ({0}) running {1}:{2}. {3}'.format(str(ex), tool, w, msg))
-                                        self.__store_execution_error(execution, ex, 'create')
-
+                                    msg = 'Max retry count ({0}) exceeded. Ignoring and continuing with the next test'.format(max_retry)
+                                    logger.error('Unhandled exception ({0}) running {1}:{2}. {3}'.format(str(ex), tool, w, msg))
+                                    self.__store_execution_error(execution, ex, 'create')
+                                    if fail_on_error:
+                                        logger.error('Unhandled exception({0}) running {1}:{2}. '
+                                                     'Stopping here because "--failonerror" option is set'.format(str(ex), tool, w))
+                                        raise ex
             except Exception as ex:
                 raise ex
 
