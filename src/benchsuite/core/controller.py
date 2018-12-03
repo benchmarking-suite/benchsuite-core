@@ -223,17 +223,15 @@ class BenchmarkingController:
 
             return r
 
-        except NoExecuteCommandsFound as ex:
-            logger.error('The benchmark configuration does not define any command for this platform. Aborting the execution')
-            self.__store_execution_error(e, ex, 'run')
-            raise ex
-
         except BashCommandExecutionFailedException as ex:
             error_file = 'last_cmd_error_{0}.dump'.format(exec_id)
             logger.error('Exception executing commands, dumping to {0}'.format(error_file))
             dump_BashCommandExecution_exception(ex, error_file)
             self.__store_execution_error(e, ex, 'run')
-            logger.info('Continuing with the next test')
+            raise ex
+
+        except Exception as ex:
+            self.__store_execution_error(e, ex, 'run')
             raise ex
 
     def cleanup_execution(self, exec_id, session_id=None):
