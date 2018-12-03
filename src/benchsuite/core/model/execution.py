@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 class ExecutionResultParser(ABC):
 
     @abstractmethod
-    def get_metrics(self, stdout, stderr):
+    def get_metrics(self, tool, workload, logs):
         """
         Parsers the execution output to extract metrics
         :param stdout: 
@@ -125,15 +125,14 @@ class BenchmarkExecution:
         e.workload = self.test.workload_id
         e.provider = self.session.provider.get_provder_properties_dict()
         e.exec_env = self.exec_env.get_specs_dict()
-        stdout, stderr = self.test.get_result(self)
-        e.logs = {'stdout': stdout, 'stderr': stderr}
+        e.logs = self.test.get_result(self)
         e.properties.update(self.session.props)
         e.metrics = {'duration': {'value': e.duration, 'unit': 's'}}
         if self.test.parser:
-            try:
-                e.metrics.update(self.test.parser.get_metrics(stdout, stderr))
-            except Exception as ex:
-                logger.error('Error parsing execution results: '.format(str(ex)))
+            #try:
+            e.metrics.update(self.test.parser.get_metrics(e.tool, e.workload, e.logs))
+            #except Exception as ex:
+            #    logger.error('Error parsing execution results: {0}'.format(str(ex)))
         return e
 
     def collect_result(self):
