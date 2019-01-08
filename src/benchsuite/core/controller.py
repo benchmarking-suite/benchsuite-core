@@ -218,11 +218,6 @@ class BenchmarkingController:
         try:
             r = e.execute(async=async)
 
-            if not async:
-                self.store_execution_result(exec_id)
-
-            return r
-
         except BashCommandExecutionFailedException as ex:
             error_file = 'last_cmd_error_{0}.dump'.format(exec_id)
             logger.error('Exception executing commands, dumping to {0}'.format(error_file))
@@ -233,6 +228,15 @@ class BenchmarkingController:
         except Exception as ex:
             self.__store_execution_error(e, ex, 'run')
             raise ex
+
+        if not async:
+            try:
+                self.store_execution_result(exec_id)
+            except Exception as ex:
+                self.__store_execution_error(e, ex, 'parsing')
+                raise ex
+
+        return r
 
     def cleanup_execution(self, exec_id, session_id=None):
         e = self.get_execution(exec_id, session_id)

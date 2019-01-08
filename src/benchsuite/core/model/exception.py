@@ -51,6 +51,11 @@ class BashCommandExecutionFailedException(BaseBenchmarkingSuiteException):
         self.stdout = None
         self.stderr = None
 
+class ParsingException(BaseBenchmarkingSuiteException):
+
+    def __init__(self, *args: Any) -> None:
+        super().__init__(*args)
+        self.logs = None
 
 class NoExecuteCommandsFound(BaseBenchmarkingSuiteException):
     pass

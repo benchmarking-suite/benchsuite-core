@@ -23,6 +23,7 @@ from abc import ABC, abstractmethod
 
 import logging
 
+from benchsuite.core.model.exception import ParsingException
 
 logger = logging.getLogger(__name__)
 
@@ -129,10 +130,13 @@ class BenchmarkExecution:
         e.properties.update(self.session.props)
         e.metrics = {'duration': {'value': e.duration, 'unit': 's'}}
         if self.test.parser:
-            #try:
-            e.metrics.update(self.test.parser.get_metrics(e.tool, e.workload, e.logs))
-            #except Exception as ex:
-            #    logger.error('Error parsing execution results: {0}'.format(str(ex)))
+            try:
+                e.metrics.update(self.test.parser.get_metrics(e.tool, e.workload, e.logs))
+            except Exception as ex:
+                logger.error('Error parsing execution results: {0}'.format(str(ex)))
+                pe = ParsingException('Error parsing execution results: {0}'.format(str(ex)))
+                pe.logs = e.logs
+                raise pe from ex
         return e
 
     def collect_result(self):
