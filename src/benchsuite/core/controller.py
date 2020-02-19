@@ -212,11 +212,11 @@ class BenchmarkingController:
             logger.info('Continuing with the next test')
             raise ex
 
-    def run_execution(self, exec_id, async=False, session_id=None):
+    def run_execution(self, exec_id, _async=False, session_id=None):
         e = self.get_execution(exec_id, session_id)
 
         try:
-            r = e.execute(async=async)
+            r = e.execute(_async=_async)
 
         except BashCommandExecutionFailedException as ex:
             error_file = 'last_cmd_error_{0}.dump'.format(exec_id)
@@ -229,7 +229,7 @@ class BenchmarkingController:
             self.__store_execution_error(e, ex, 'run')
             raise ex
 
-        if not async:
+        if not _async:
             try:
                 self.store_execution_result(exec_id)
             except Exception as ex:

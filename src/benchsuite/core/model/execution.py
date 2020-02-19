@@ -98,10 +98,10 @@ class BenchmarkExecution:
         ret.duration = time.time() - ret.started
         return ret
 
-    def execute(self, async=False) -> ExecutionCommandInfo:
+    def execute(self, _async=False) -> ExecutionCommandInfo:
         ret = ExecutionCommandInfo()
         ret.started = time.time()
-        self.test.execute(self, async=async)
+        self.test.execute(self, _async=_async)
         ret.duration = time.time() - ret.started
         self.last_run_info = ret
         return ret

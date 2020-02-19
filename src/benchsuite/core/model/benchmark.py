@@ -54,7 +54,7 @@ class Benchmark:
         pass
 
     @abstractmethod
-    def execute(self, execution, async=False):
+    def execute(self, execution, _async=False):
         pass
 
     @abstractmethod
