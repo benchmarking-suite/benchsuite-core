@@ -133,14 +133,15 @@ class ControllerConfiguration():
                     except ControllerConfigurationException:
                         pass
 
-
-        for f in os.listdir(os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR)):
-            if os.path.splitext(f)[1] in ['.conf', '.json']:
-                try:
-                    n = os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR, f)
-                    providers.append(ServiceProviderConfiguration(n))
-                except ControllerConfigurationException:
-                    pass
+        default_dir = os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR)
+        if os.path.exists(default_dir):
+            for f in os.listdir(os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR)):
+                if os.path.splitext(f)[1] in ['.conf', '.json']:
+                    try:
+                        n = os.path.join(self.default_config_dir, self.CLOUD_PROVIDERS_DIR, f)
+                        providers.append(ServiceProviderConfiguration(n))
+                    except ControllerConfigurationException:
+                        pass
 
         return providers
 
