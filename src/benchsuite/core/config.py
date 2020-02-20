@@ -89,7 +89,7 @@ class BenchmarkToolConfiguration():
         return [w['id'] for w in self.workloads if re.match(regex, w['id'])]
 
     def __str__(self) -> str:
-        return '{0}: {1}'.format(self.name, self.workloads)
+        return '{0}: {1}'.format(self.tool_name, self.workloads)
 
 
 class ControllerConfiguration():
