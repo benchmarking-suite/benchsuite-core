@@ -270,7 +270,7 @@ class BenchmarkingController:
     #
     def execute_onestep(self, provider, service_type: str,
                         tests: List[Tuple[str, str]],
-                        new_session_props=None,
+                        new_session_props={},
                         fail_on_error=False,
                         destroy_session=True,
                         max_retry=1) -> None:
