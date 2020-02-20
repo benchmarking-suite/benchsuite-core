@@ -50,7 +50,7 @@ class ServiceProvider(ABC):
         pass
 
     @abstractmethod
-    def get_provder_properties_dict(self):
+    def get_provider_properties_dict(self):
         """This is used to create the dictionary to store in the MongoDB"""
         pass
 
