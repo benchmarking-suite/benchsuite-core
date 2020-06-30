@@ -55,11 +55,11 @@ class ExecutionResult:
         self.provider = {}
 
     def __str__(self) -> str:
-        return f'''
+        return '''
 | ExecutionResult
-|  - test: {self.tool} - {self.workload}
-|  - logs: {self.logs}
-!  - metrics: {self.metrics}'''
+|  - test: {tool} - {workload}
+|  - logs: {logs}
+|  - metrics: {metrics}'''.format(**self.__dict__)
 
 
 class ExecutionError:
