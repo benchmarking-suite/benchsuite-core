@@ -54,6 +54,13 @@ class ExecutionResult:
         self.properties = {}
         self.provider = {}
 
+    def __str__(self) -> str:
+        return f'''
+| ExecutionResult
+|  - test: {self.tool} - {self.workload}
+|  - logs: {self.logs}
+!  - metrics: {self.metrics}'''
+
 
 class ExecutionError:
 
@@ -66,7 +73,6 @@ class ExecutionError:
         self.traceback = None
         self.exception_data = None
         self.timestamp = None
-
 
 
 class ExecutionCommandInfo:
@@ -124,7 +130,7 @@ class BenchmarkExecution:
         e.categories = self.test.workload_categories
         e.workload_description = self.test.workload_description
         e.workload = self.test.workload_id
-        e.provider = self.session.provider.get_provder_properties_dict()
+        e.provider = self.session.provider.get_provider_properties_dict()
         e.exec_env = self.exec_env.get_specs_dict()
         e.logs = self.test.get_result(self)
         e.properties.update(self.session.props)
