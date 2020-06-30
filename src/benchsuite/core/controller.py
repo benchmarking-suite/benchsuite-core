@@ -189,7 +189,7 @@ class BenchmarkingController:
         exec_err_obj.timestamp = datetime.datetime.now()
         exec_err_obj.tool = execution.test.tool_id
         exec_err_obj.workload = execution.test.workload_id
-        exec_err_obj.provider = execution.session.provider.get_provder_properties_dict()
+        exec_err_obj.provider = execution.session.provider.get_provider_properties_dict()
         exec_err_obj.exec_env = execution.exec_env.get_specs_dict() if execution.exec_env else "Not available"
         exec_err_obj.phase = phase
         exec_err_obj.exception_type = type(exception).__name__
