@@ -22,6 +22,7 @@ import os
 import sys
 from abc import abstractmethod
 
+from benchsuite.core.configreader import BenchsuiteConfigParser
 from benchsuite.core.model.exception import ControllerConfigurationException
 
 
@@ -70,14 +71,12 @@ class Benchmark:
         pass
 
 
-
 def load_benchmark_from_config_file(config_file, tool, workload):
     if not os.path.isfile(config_file):
         raise ControllerConfigurationException('Config file {0} does not exist'.format(config_file))
 
-    config = configparser.ConfigParser()
+    config = BenchsuiteConfigParser()
     config.read(config_file)
-
 
     provider_class = config['DEFAULT']['class']
 
