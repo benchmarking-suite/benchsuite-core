@@ -131,6 +131,7 @@ class BenchmarkExecution:
         e.workload_description = self.test.workload_description
         e.workload = self.test.workload_id
         e.provider = self.session.provider.get_provider_properties_dict()
+        e.exec_id = self.id
         e.exec_env = self.exec_env.get_specs_dict()
         e.logs = self.test.get_result(self)
         e.properties.update(self.session.props)
